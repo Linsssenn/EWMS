@@ -6,8 +6,8 @@ class Detachment {
     this.address = address;
     this.city = city;
     this.zip = zip;
-    this.latitude = lat;
-    this.longitude = lon;
+    this.lat = lat;
+    this.lon = lon;
   }
 
   validDetachment() {
@@ -20,7 +20,7 @@ class Detachment {
       }
     });
     // Check if lat or long is valid
-    if (!Validator.isLatLong(`${this.latitude}, ${this.longitude}`)) {
+    if (!Validator.isLatLong(`${this.lat}, ${this.lon}`)) {
       errors["latlong"] = `latlong must be a valid latitude-longitude format`;
     }
     if (isEmpty(errors)) {
