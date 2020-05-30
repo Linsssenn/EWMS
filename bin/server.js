@@ -6,7 +6,7 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-dotenv.config({ path: __dirname + "/config.env" });
+dotenv.config({ path: "./config.env" });
 
 const app = require("../app");
 // runs before the app to read the dotenv config

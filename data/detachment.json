@@ -1,0 +1,73 @@
+[{
+        "name": "Greenwich",
+        "address": "Greenwich - Robinsons Dasmariñas",
+        "city": "Cavite",
+        "zip": 4114,
+        "lat": 14.299907,
+        "lon": 120.953701
+    },
+    {
+        "name": "Emiya Japanese Restaurant",
+        "address": "Dasmariñas, Cavite",
+        "city": "Cavite",
+        "zip": 4114,
+        "lat": 14.291301,
+        "lon": 120.977593
+    },
+    {
+        "name": "Ho Chai Lai Restaurant",
+        "address": "Governor's Dr, Langkaan, Dasmariñas, Cavite",
+        "city": "Cavite",
+        "zip": 4114,
+        "lat": 14.299063,
+        "lon": 120.949937
+    },
+    {
+        "name": "Samgyupsalamat Dasmarinas Branch",
+        "address": "Cavite, Dasmariñas, Cavite Emilio Aguinaldo Highway near Governor's Drive",
+        "city": "Cavite",
+        "zip": 4114,
+        "lat": 14.302083,
+        "lon": 120.954226
+    },
+    {
+        "name": "Manong G Bulalo. Restaurant. Bar",
+        "address": "Pala-pala Rd, Dasmariñas, 4114 Cavite",
+        "city": "Cavite",
+        "zip": 4114,
+        "lat": 14.301533,
+        "lon": 120.953782
+    },
+    {
+        "name": "RSM Lutong Bahay",
+        "address": "Governor's Dr, Sampaloc, Dasmariñas, 4114 Cavite",
+        "city": "Cavite",
+        "zip": 4114,
+        "lat": 14.299780,
+        "lon": 120.961165
+    },
+    {
+        "name": "Balinsasayaw Restaurant",
+        "address": "Emilio Aguinaldo Hwy, Dasmarinas City, 4114 Cavite",
+        "city": "Cavite",
+        "zip": 4114,
+        "lat": 14.331653,
+        "lon": 120.939680
+    },
+    {
+        "name": "Le Don's Garden",
+        "address": " Asuncion Subdivision, Purok 3 Emilio Aguinaldo Highway, Biga 1, Silang, 4118 Cavite",
+        "city": "Cavite",
+        "zip": 4114,
+        "lat": 14.246263,
+        "lon": 120.974920
+    },
+    {
+        "name": "Le Don's Garden",
+        "address": " Asuncion Subdivision, Purok 3 Emilio Aguinaldo Highway, Biga 1, Silang, 4118 Cavite",
+        "city": "Cavite",
+        "zip": 4114,
+        "lat": 14.246263,
+        "lon": 120.974920
+    }
+]

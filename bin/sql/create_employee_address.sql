@@ -1,11 +1,13 @@
 CREATE TABLE employee_address (
     id      SERIAL PRIMARY KEY,
-    streetAddress (64),
+    streetAddress VARCHAR(64),
     city VARCHAR(64),
     state VARCHAR(64),
-    zipCode INTEGER(4) NOT NULL,
-    homePhone VARCHAR(64),
-    cellPhone INTEGER(11),
+    zipCode INTEGER NOT NULL,
     lat numeric,
-	lon numeric
+	lon numeric,
+    geom geometry(POINT,4326)
 );
+
+-- Create an Index to the table
+CREATE INDEX employee_address_gist ON employee_address USING gist (geom)

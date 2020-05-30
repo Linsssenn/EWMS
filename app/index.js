@@ -25,10 +25,26 @@ app.use(cookieParser());
  * err.statusCode = 404;
  * next(err);
  */
+app.get("/api/error", (req, res, next) => {
+  next(
+    new AppError("Invalid input", 401, [
+      {
+        field: "password",
+        message: "Password require's 8 Character",
+      },
+      {
+        field: "username",
+        message: "Username already exists",
+      },
+    ])
+  );
+});
+
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
+// API Errors
 app.use(globalErrorHandler);
 
 module.exports = app;
