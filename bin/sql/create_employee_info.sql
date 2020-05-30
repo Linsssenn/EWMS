@@ -7,3 +7,5 @@ CREATE TABLE employee_genInfo (
     cellPhone INTEGER NOT NULL,
     dateAdded TIMESTAMP NOT NULL
 );
+
+
