@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === "production") {
 module.exports = pool;
 
 // TEST
-pool.query("SELECT * FROM detachment", (error, response) => {
-  if (error) console.log(error);
-  console.log("response.rows", response.rows);
-});
+// pool.query("SELECT * FROM detachment", (error, response) => {
+//   if (error) console.log(error);
+//   console.log("response.rows", response.rows);
+// });
