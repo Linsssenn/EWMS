@@ -39,7 +39,7 @@ class GeoJsonHelper {
       },
       properties: {
         f1: ++this.features.length,
-        f2: "Pogie",
+        f2: "Wew",
       },
     };
     this.features.push(newFeature);
