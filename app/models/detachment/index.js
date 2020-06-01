@@ -20,7 +20,11 @@ class Detachment {
       }
     });
     // Check if lat or long is valid
-    if (!Validator.isLatLong(`${this.lat}, ${this.lon}`)) {
+    if (
+      !errors.hasOwnProperty("lat") &&
+      !errors.hasOwnProperty("lon") &&
+      !Validator.isLatLong(`${this.lat}, ${this.lon}`)
+    ) {
       errors["latlong"] = `latlong must be a valid latitude-longitude format`;
     }
     if (isEmpty(errors)) {
@@ -29,10 +33,11 @@ class Detachment {
     return { error: errors };
   }
 
-  selectedFields(excludeKey) {
+  // Private method
+  excludeFields(excludeKey) {
     // const excludeKey = ["name", "address"];
     const value = Object.keys(this).reduce((result, key) => {
-      if (excludeKey.includes(key) && this[key] !== undefined) {
+      if (!excludeKey.includes(key) && this[key] !== undefined) {
         result[key] = this[key];
       }
       return result;
@@ -44,13 +49,16 @@ class Detachment {
 module.exports = Detachment;
 
 // TEST
-// const detachment = new Detachment({
-//   name: "Wew",
-//   address: "address",
-//   city: "city",
-//   zip: "zip",
-//   lat: 14.299063,
-//   lon: 120.949937,
-// }).validDetachment();
-// console.log(detachment);
-// console.log(detachment.hasOwnProperty("success"));
+console.time();
+const detachment = new Detachment({
+  name: "Wew",
+  address: "address",
+  city: "city",
+  zip: "zip",
+  lat: 14.299063,
+  lon: 120.949937,
+}).validDetachment();
+
+console.log(detachment);
+console.log(detachment.hasOwnProperty("success"));
+console.timeEnd();
