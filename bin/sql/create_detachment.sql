@@ -3,9 +3,9 @@ CREATE TABLE detachment
 	(
 	  id SERIAL PRIMARY KEY,
 	  name character varying(50),
-	  address character varying(50),
+	  address character varying(150),
 	  city character varying(50),
-	  zip character varying(10),
+	  zip numeric,
 	  lat numeric,
 	  lon numeric,
 	  geom geometry(POINT,4326)

@@ -49,16 +49,16 @@ class Detachment {
 module.exports = Detachment;
 
 // TEST
-console.time();
-const detachment = new Detachment({
-  name: "Wew",
-  address: "address",
-  city: "city",
-  zip: "zip",
-  lat: 14.299063,
-  lon: 120.949937,
-}).validDetachment();
+// console.time();
+// const detachment = new Detachment({
+//   name: "Wew",
+//   address: "address",
+//   city: "city",
+//   zip: "zip",
+//   lat: 14.299063,
+//   lon: 120.949937,
+// }).validDetachment();
 
-console.log(detachment);
-console.log(detachment.hasOwnProperty("success"));
-console.timeEnd();
+// console.log(detachment);
+// console.log(detachment.hasOwnProperty("success"));
+// console.timeEnd();
