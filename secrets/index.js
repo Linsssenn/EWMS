@@ -1,3 +1,3 @@
-const APP_SECRET = " foo123!123foo";
+const APP_SECRET = "secretcookiebar";
 // use to create HASH
 module.exports = { APP_SECRET };

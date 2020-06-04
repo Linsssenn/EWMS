@@ -29,21 +29,6 @@ class GeoJsonHelper {
 
     return features;
   }
-
-  addFeatures() {
-    const newFeature = {
-      type: "Feature",
-      geometry: {
-        type: "Point",
-        coordinates: [-71.10044, 42.373695],
-      },
-      properties: {
-        f1: ++this.features.length,
-        f2: "Wew",
-      },
-    };
-    this.features.push(newFeature);
-  }
 }
 
 module.exports = GeoJsonHelper;

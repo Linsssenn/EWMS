@@ -36,7 +36,7 @@ class DetachmentTable {
     });
   }
 
-  static getDetachments() {
+  static getDetachmentsGeoJson() {
     return new Promise((resolve, reject) => {
       const detachmentQuery =
         "SELECT row_to_json(fc) FROM ( SELECT 'FeatureCollection' As type, array_to_json(array_agg(f)) As features FROM (SELECT 'Feature' As type, ST_AsGeoJSON(lg.geom)::json As geometry, row_to_json((id, name)) As properties FROM detachment As lg) As f) As fc";
@@ -46,11 +46,19 @@ class DetachmentTable {
       });
     });
   }
+
+  static getDetachments() {
+    return new Promise((resolve, reject) => {
+      pool.query("SELECT * FROM detachment", (error, response) => {
+        if (error) return reject(error);
+        resolve(response.rows);
+      });
+    });
+  }
 }
 
-// Test
 // console.time();
-// DetachmentTable.getDetachments()
+// DetachmentTable.getDetachmentsGeoJson()
 //   .then((detachmentJson) => {
 //     console.log(detachmentJson);
 //   })
