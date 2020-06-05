@@ -1,5 +1,3 @@
-const pool = require("../../../bin/databasePool");
-
 class GeoJsonHelper {
   constructor(rows) {
     this.type = "FeatureCollection";

@@ -1,5 +1,5 @@
 const { v4: uuidv4 } = require("uuid");
-const { hash } = require("./helper");
+const { hash } = require("../helper/hash");
 
 const SEPERATOR = "|";
 

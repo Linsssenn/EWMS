@@ -1,6 +1,6 @@
 const Session = require("../models/account/session");
 const AccountTable = require("../models/account/table");
-const { hash } = require("../models/account/helper");
+const { hash } = require("../models/helper/hash");
 const handleAsync = require("../utils/asyncHandler");
 
 const setSession = async ({ username, res, sessionId }) => {
@@ -25,13 +25,13 @@ const setSession = async ({ username, res, sessionId }) => {
         usernameHash: hash(username),
       })
     );
-    console.log(sessionString);
+
     if (user === undefined) throw new Error("Could not update user session");
     if (userErr) throw new Error("Could not update user session");
     // store the session in the cookie
     setSessionCookie({ sessionString, res });
     // promise returns a message
-    return { message: "session created", user };
+    return { message: "session created" };
   }
 };
 
@@ -54,12 +54,12 @@ const authenticatedAccount = async ({ sessionString }) => {
   } else {
     const { username, id } = Session.parse(sessionString);
 
-    const [user, userErr] = await handleAsync(
+    const [{ account }, userErr] = await handleAsync(
       AccountTable.getAccount({
         usernameHash: hash(username),
       })
     );
-    const { account } = user;
+
     const authenticated = account.sessionId === id;
     if (userErr) throw new Error("Could not authenticate user session");
     return { account, authenticated, username };
@@ -70,12 +70,18 @@ module.exports = { setSession, authenticatedAccount };
 
 // authenticatedAccount({
 //   sessionString:
-//     "Hello|132ec46d-36fb-471b-b445-3a96fbbc5af1|6dc8a0b2a0caa55ac904b00dd9f71f9a25e3143b9e632ca5ef67d0dfa29b04c7",
+//     "Hello|ac30143b-82b3-4edd-88bd-3999854e4f73|278e617ba628655a4896ec81ad3b6483c2715ee219f00c4302eca296857ad6b8",
 // })
 //   .then((res) => console.log(res))
 //   .catch((err) => console.log(err));
-// setSession({
-//   username: "Hello",
-// })
-//   .then((res) => console.log(res))
-//   .catch((err) => console.error(err));
+
+// async function test() {
+//   const [message, sessionError] = await handleAsync(
+//     setSession({ username: "Hello" })
+//   );
+//   if (message) {
+//     console.log(message);
+//   }
+//   console.log(sessionError);
+// }
+// test();

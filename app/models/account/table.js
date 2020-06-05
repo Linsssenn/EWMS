@@ -1,5 +1,6 @@
 const pool = require("../../../bin/databasePool");
-const { hash } = require("./helper");
+const { hash } = require("../helper/hash");
+const handleAsync = require("../../utils/asyncHandler");
 class AccountTable {
   static storeAccount({ usernameHash, passwordHash }) {
     return new Promise((resolve, reject) => {
@@ -25,7 +26,7 @@ class AccountTable {
         (error, response) => {
           if (error) return reject(error);
           // return 1 rows if resolve
-          console.log(usernameHash);
+
           resolve({ account: response.rows[0] });
         }
       );
@@ -49,8 +50,19 @@ class AccountTable {
 module.exports = AccountTable;
 
 // AccountTable.storeAccount({
-//   usernameHash: hash("Hello1"),
+//   usernameHash: hash("Hello2"),
 //   passwordHash: "Popo",
 // })
 //   .then((res) => console.log(res))
 //   .catch((err) => console.log(err));
+
+// async function test() {
+//   const [{ account }, accountErr] = await handleAsync(
+//     AccountTable.getAccount({ usernameHash: hash("Hello") })
+//   );
+//   if (account) {
+//     console.log(account.sessionId);
+//   }
+//   console.log(accountErr);
+// }
+// test();
