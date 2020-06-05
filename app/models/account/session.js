@@ -38,6 +38,7 @@ class Session {
     // sessionString = foo|randomId|hash(foo|randomId)
     // return username: foo, id: randomId, sessionHash: hash(foo|randomId)
     const { username, id, sessionHash } = Session.parse(sessionString);
+
     // get the username and id
     // returns foo|randomId
     const accountData = Session.accountData({ username, id });
@@ -65,12 +66,12 @@ class Session {
 
 module.exports = Session;
 
-const sessionString = new Session({ username: "foo" });
+// const sessionString = new Session({ username: "foo" });
 
-const sessionFoo = sessionString.toString();
-console.log("sessionFoo", sessionFoo);
-console.log("Session.parse(sessionFoo):", Session.parse(sessionFoo));
+// const sessionFoo = sessionString.toString();
+// console.log("sessionFoo", sessionFoo);
+// console.log("Session.parse(sessionFoo):", Session.parse(sessionFoo));
 
-const fakeFooString = `admin_${sessionFoo}`;
+// const fakeFooString = `admin_${sessionFoo}`;
 
-console.log("Session.verify(fakeFooString)", Session.verify(fakeFooString));
+// console.log("Session.verify(fakeFooString)", Session.verify(fakeFooString));
