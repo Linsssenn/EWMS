@@ -30,11 +30,11 @@ exports.signup = catchAsync(async (req, res, next) => {
   const [message, sessionError] = await handleAsync(
     setSession({ username, res })
   );
-  if (message) res.status(200).json(message);
   if (sessionError)
     return next(
       new AppError("There was an error in singing in please try again", 400)
     );
+  if (message) res.status(200).json(message);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -69,4 +69,31 @@ exports.logout = catchAsync(async (req, res, next) => {
   res.json({ message: "Succesful Logout" });
 });
 
-exports.authenticated = catchAsync(async (req, res, next) => {});
+exports.authenticated = catchAsync(async (req, res, next) => {
+  const { sessionString } = req.cookies;
+  const { authenticated } = await authenticatedAccount(sessionString);
+  if (!authenticated)
+    return next(new AppError("The user is not authenticated", 401));
+  res.status(200).json({ authenticated });
+});
+
+exports.protect = catchAsync(async (req, res, next) => {
+  const { sessionString } = req.cookies;
+  if (!sessionString)
+    return next(
+      new AppError("You are not logged in! Please get login to get access", 401)
+    );
+
+  const [authAccount, authAccountErr] = await handleAsync(
+    authenticatedAccount({
+      sessionString: sessionString,
+    })
+  );
+  // console.log(authAccountErr);
+  if (authAccountErr) return next(new AppError(authAccountErr));
+  if (!authAccount)
+    return next(new AppError("The user is not authenticated", 401));
+  if (!authAccount.authenticated)
+    return next(new AppError("Session expired", 400));
+  if (authAccount) next();
+});

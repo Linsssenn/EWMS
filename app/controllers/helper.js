@@ -18,6 +18,7 @@ const setSession = async ({ username, res, sessionId }) => {
 
     session = new Session({ username });
     sessionString = session.toString();
+
     // Update sessionId in the database
     const [user, userErr] = await handleAsync(
       AccountTable.updateSessionId({
@@ -48,31 +49,46 @@ const setSessionCookie = ({ sessionString, res }) => {
 
 const authenticatedAccount = async ({ sessionString }) => {
   if (!sessionString || !Session.verify(sessionString)) {
-    const error = new Error("Invalid session");
-    error.statusCode = 400;
-    throw error;
+    return Promise.reject("Invalid Session");
   } else {
     const { username, id } = Session.parse(sessionString);
 
-    const [{ account }, userErr] = await handleAsync(
+    const [{ account }, accountErr] = await handleAsync(
       AccountTable.getAccount({
         usernameHash: hash(username),
       })
     );
 
     const authenticated = account.sessionId === id;
-    if (userErr) throw new Error("Could not authenticate user session");
-    return { account, authenticated, username };
+    if (accountErr)
+      return Promise.reject("Could not authenticate user session");
+    return Promise.resolve({ account, authenticated, username });
   }
 };
 
 module.exports = { setSession, authenticatedAccount };
 
+// async function testAuth() {
+//   const [authAccount, authAccountErr] = await handleAsync(
+//     authenticatedAccount({
+//       sessionString:
+//         "Hello|cac6483a-2497-4cd6-a417-1a45c939a265|c045b1713710c0b05aaccd97de6e6fc5d6fb4a5dd90e5b7c65fe1b26dee5ea84",
+//     })
+//   );
+//   // console.log(authAccountErr);
+//   if (authAccountErr) throw new Error(authAccountErr);
+//   if (!authAccount.authenticated) throw new Error("Session expired");
+//   if (authAccount) return authAccount.authenticated;
+// }
+// testAuth()
+//   .then((res) => console.log("res", res))
+//   .catch((err) => console.log(err));
+
 // authenticatedAccount({
 //   sessionString:
-//     "Hello|ac30143b-82b3-4edd-88bd-3999854e4f73|278e617ba628655a4896ec81ad3b6483c2715ee219f00c4302eca296857ad6b8",
+//     "Hello|f3e94589-4852-4240-a68a-8438ac5062c4|74b4dfbab060c185c57cfb4a30b4bc8b33f367f868b8eb3ccfbedfd3379089ad",
 // })
-//   .then((res) => console.log(res))
+//   .then(({ authenticated }) => console.log({ authenticated }))
 //   .catch((err) => console.log(err));
 
 // async function test() {
