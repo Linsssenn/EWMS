@@ -2,7 +2,7 @@ const pool = require("../../../bin/databasePool");
 const detachmentData = require("../../../data/detachment.json");
 const Detachment = require("./index");
 const GeoJsonHelper = require("../helper/geoJson");
-const { expand, flatten } = require("../helper/sqlMultiple");
+const { expand, flatten } = require("../helper/queryBuilder");
 
 class DetachmentTable {
   static storeDetachment(detachment) {
