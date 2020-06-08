@@ -1,6 +1,7 @@
 const pool = require("../../../bin/databasePool");
 const { hash } = require("../helper/hash");
 const handleAsync = require("../../utils/asyncHandler");
+
 class AccountTable {
   static storeAccount({ usernameHash, passwordHash }) {
     return new Promise((resolve, reject) => {

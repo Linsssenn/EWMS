@@ -1,6 +1,8 @@
 const pool = require("../../../bin/databasePool");
 const detachmentData = require("../../../data/detachment.json");
 const Detachment = require("./index");
+const GeoJsonHelper = require("../helper/geoJson");
+const { expand, flatten } = require("../helper/sqlMultiple");
 
 class DetachmentTable {
   static storeDetachment(detachment) {
@@ -19,8 +21,29 @@ class DetachmentTable {
     });
   }
 
+  static storeMultipleDetachments(detachmentArray) {
+    const sqlParameter = expand(
+      detachmentArray.length,
+      Object.keys(detachmentArray[0]).length
+    );
+    const sqlValues = flatten(detachmentArr);
+
+    return new Promise((resolve, reject) => {
+      pool.query(
+        `INSERT INTO detachment(name, address, city, zip, lat, lon) VALUES ${sqlParameter} returning id`,
+        sqlValues,
+        (error, response) => {
+          if (error) return reject(error);
+          const detachment = response.rows;
+          resolve(detachment);
+        }
+      );
+    });
+  }
+
   static storeDetachments(detachmentArray) {
     const detachmentArrString = JSON.stringify(detachmentArray);
+
     return new Promise((resolve, reject) => {
       pool.query(
         `INSERT INTO detachment(name, address, city, zip, lat, lon)
@@ -51,12 +74,31 @@ class DetachmentTable {
     return new Promise((resolve, reject) => {
       pool.query("SELECT * FROM detachment", (error, response) => {
         if (error) return reject(error);
-        resolve(response.rows);
+        const jsonCoffee = new GeoJsonHelper(response.rows);
+        resolve(jsonCoffee);
       });
+    });
+  }
+
+  static getDetachmentById(detachmentId) {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        "SELECT * FROM detachment WHERE id = $1",
+        [detachmentId],
+        (error, response) => {
+          if (error) return reject(error);
+          resolve(response.rows[0]);
+        }
+      );
     });
   }
 }
 
+// console.time();
+// DetachmentTable.getDetachments()
+//   .then((detachmentData) => console.log(detachmentData))
+//   .catch((error) => console.log(error));
+// console.timeEnd();
 // console.time();
 // DetachmentTable.getDetachmentsGeoJson()
 //   .then((detachmentJson) => {
@@ -89,7 +131,7 @@ class DetachmentTable {
 //   }
 // }
 // if (!detachmentArr[0].error) {
-//   DetachmentTable.storeDetachments(detachmentArr)
+//   DetachmentTable.storeMultipleDetachments(detachmentArr)
 //     .then((detachmentIds) => console.log(detachmentIds))
 //     .catch((error) => console.log(error));
 // }
