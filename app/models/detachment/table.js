@@ -22,16 +22,15 @@ class DetachmentTable {
   }
 
   static storeMultipleDetachments(detachmentArray) {
-    const sqlParameter = expand(
-      detachmentArray.length,
-      Object.keys(detachmentArray[0]).length
-    );
-    const sqlValues = flatten(detachmentArr);
-
     return new Promise((resolve, reject) => {
+      const sqlParameter = expand(
+        detachmentArray.length,
+        Object.keys(detachmentArray[0]).length
+      );
+      const sqlArguments = flatten(detachmentArray);
       pool.query(
         `INSERT INTO detachment(name, address, city, zip, lat, lon) VALUES ${sqlParameter} returning id`,
-        sqlValues,
+        sqlArguments,
         (error, response) => {
           if (error) return reject(error);
           const detachment = response.rows;
@@ -70,7 +69,7 @@ class DetachmentTable {
     });
   }
 
-  static getDetachments() {
+  static getDetachmentsGeo() {
     return new Promise((resolve, reject) => {
       pool.query("SELECT * FROM detachment", (error, response) => {
         if (error) return reject(error);
@@ -90,6 +89,15 @@ class DetachmentTable {
           resolve(response.rows[0]);
         }
       );
+    });
+  }
+
+  static getDetachments() {
+    return new Promise((resolve, reject) => {
+      pool.query("SELECT * FROM detachment", (error, response) => {
+        if (error) return reject(error);
+        resolve(response.rows);
+      });
     });
   }
 }

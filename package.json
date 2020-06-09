@@ -7,7 +7,8 @@
     "EWMS": "databasePool.js"
   },
   "scripts": {
-    "dev": "nodemon ./bin/server"
+    "dev": "nodemon ./bin/server",
+    "configure": "bash .\\bin\\configure_db.sh"
   },
   "keywords": [],
   "author": "",
