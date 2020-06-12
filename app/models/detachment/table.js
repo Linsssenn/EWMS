@@ -100,7 +100,35 @@ class DetachmentTable {
       });
     });
   }
+
+  static updateDetachment(detachment, id) {
+    const { name, address, city, zip, lat, lon } = detachment;
+    return new Promise((resolve, reject) => {
+      pool.query(
+        "UPDATE detachment SET name = $1, address = $2, city = $3, zip = $4, lat = $5, lon = $6 WHERE id = $7",
+        [name, address, city, zip, lat, lon, id],
+        (error, response) => {
+          if (error) return reject(error);
+
+          resolve();
+        }
+      );
+    });
+  }
 }
+
+// const detach = new Detachment({
+//   name: "Pogi Japanese Restaurant 1000",
+//   address: "Dasmariñas, Cavite",
+//   city: "Cavite",
+//   zip: 4114,
+//   lat: 14.291301,
+//   lon: 120.977593,
+// }).validDetachment();
+// console.log(detach);
+// DetachmentTable.updateDetachment(detach.success, 2)
+//   .then((res) => console.log("success"))
+//   .catch((err) => console.log(err));
 
 // console.time();
 // DetachmentTable.getDetachments()
