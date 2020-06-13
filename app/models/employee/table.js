@@ -1,22 +1,13 @@
 const pool = require("../../../bin/databasePool");
-const { expand, flatten } = require("../helper/queryBuilder");
+const {
+  expand,
+  flatten,
+  updateString,
+  updateValueExclude,
+} = require("../helper/queryBuilder");
 const GeoJsonHelper = require("../helper/geoJson");
 
 class EmployeeTable {
-  // static storeEmplyee({ infoId, addressId }) {
-  //   return new Promise((resolve, reject) => {
-  //     pool.query(
-  //       'INSERT INTO employee("infoId", "addressId") VALUES($1, $2)',
-  //       [infoId, addressId],
-  //       (error, response) => {
-  //         if (error) return reject(error);
-
-  //         resolve();
-  //       }
-  //     );
-  //   });
-  // }
-
   static getEmployee({ employeeId }) {
     return new Promise((resolve, reject) => {
       pool.query(
@@ -86,27 +77,40 @@ class EmployeeTable {
       client.release();
     }
   }
-
-  static updateEmployee() {}
+  /**
+   *
+   * @param {Object} genInfo
+   * @param {Object} addressInfo
+   * @param {Number} id
+   */
+  static updateEmployee({ genInfo, addressInfo, infoId, addressId }) {
+    const genInfoString = updateString(genInfo);
+    const genInfoValue = Object.values(genInfo);
+    genInfoValue.push(infoId);
+    const idCount = `$${genInfoValue.length}`;
+    const sqlQuery = `UPDATE employee_genInfo SET ${genInfoString} WHERE id = ${idCount}`;
+  }
 }
 
-// const genInfo = {
-//   name: "Linssen",
-//   employmentType: "Junior Dev",
-//   email: "linssen@gmail.com",
-//   homePhone: 09553092415,
-//   cellPhone: 09553092415,
-//   dateAdded: new Date(),
-// };
+const genInfo = {
+  name: "Linssen",
+  employmentType: "Junior Dev",
+  email: "linssen@gmail.com",
+  homePhone: 09553092415,
+  cellPhone: 09553092415,
+  dateAdded: new Date(),
+};
 
-// const addressInfo = {
-//   streetAddress: "Dasmariñas, Cavite",
-//   city: "Cavite",
-//   state: "CALABARZON",
-//   zipCode: 4114,
-//   lat: 14.299063,
-//   lon: 120.949937,
-// };
+const addressInfo = {
+  streetAddress: "Dasmariñas, Cavite",
+  city: "Cavite",
+  state: "CALABARZON",
+  zipCode: 4114,
+  lat: 14.299063,
+  lon: 120.949937,
+};
+
+EmployeeTable.updateEmployee({ genInfo, addressInfo, infoId: 1 });
 
 // EmployeeTable.storeEmployee({ genInfo, addressInfo })
 //   .then((res) => console.log(res))

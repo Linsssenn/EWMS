@@ -2,7 +2,7 @@ const pool = require("../../../bin/databasePool");
 const detachmentData = require("../../../data/detachment.json");
 const Detachment = require("./index");
 const GeoJsonHelper = require("../helper/geoJson");
-const { expand, flatten } = require("../helper/queryBuilder");
+const { expand, flatten, updateString } = require("../helper/queryBuilder");
 
 class DetachmentTable {
   static storeDetachment(detachment) {
@@ -101,18 +101,24 @@ class DetachmentTable {
     });
   }
 
+  /**
+   *
+   * @param {Object} detachment
+   * @param {Number} id
+   */
   static updateDetachment(detachment, id) {
-    const { name, address, city, zip, lat, lon } = detachment;
+    const detachString = updateString(detachment);
+    const detachValue = Object.values(detachment);
+    detachValue.push(id);
+    const idCount = `$${detachValue.length}`;
+    const sqlQuery = `UPDATE detachment SET ${detachString} WHERE id = ${idCount}`;
+    console.log(sqlQuery, detachValue);
     return new Promise((resolve, reject) => {
-      pool.query(
-        "UPDATE detachment SET name = $1, address = $2, city = $3, zip = $4, lat = $5, lon = $6 WHERE id = $7",
-        [name, address, city, zip, lat, lon, id],
-        (error, response) => {
-          if (error) return reject(error);
+      pool.query(sqlQuery, detachValue, (error, response) => {
+        if (error) return reject(error);
 
-          resolve();
-        }
-      );
+        resolve();
+      });
     });
   }
 }
@@ -126,7 +132,14 @@ class DetachmentTable {
 //   lon: 120.977593,
 // }).validDetachment();
 // console.log(detach);
-// DetachmentTable.updateDetachment(detach.success, 2)
+// DetachmentTable.updateDetachment(
+//   {
+//     name: "Pogi Japanese Restaurant 1",
+//     lat: 14.291301,
+//     lon: 120.977593,
+//   },
+//   2
+// )
 //   .then((res) => console.log("success"))
 //   .catch((err) => console.log(err));
 
