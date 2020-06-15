@@ -21,25 +21,50 @@ class EmployeeTable {
     });
   }
 
+  static getEmployeesInfoAdd() {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        'SELECT employee.id, info.*, address.* FROM employee LEFT JOIN employee_genInfo info ON info.id = employee."infoId" LEFT JOIN employee_address address ON address.id = employee."addressId"',
+        (error, response) => {
+          if (error) return reject(error);
+          resolve(response.rows);
+        }
+      );
+    });
+  }
+
+  static getEmployeeInfoAddById(employeeId) {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        'SELECT employee.id, info.*, address.* FROM employee LEFT JOIN employee_genInfo info ON info.id = employee."infoId" LEFT JOIN employee_address address ON address.id = employee."addressId" WHERE employee.id = $1',
+        [employeeId],
+        (error, response) => {
+          if (error) return reject(error);
+          resolve(response.rows[0]);
+        }
+      );
+    });
+  }
+
   /**
    * @param {Object} genInfo
    * @param {Object} addressInfo
    */
 
   static async storeEmployee({ genInfo, addressInfo }) {
-    const {
-      name,
-      employmentType,
-      email,
-      homePhone,
-      cellPhone,
-      dateAdded,
-    } = genInfo;
-    const { streetAddress, city, state, zipCode, lat, lon } = addressInfo;
     // note: we don't try/catch this because if connecting throws an exception
     // we don't need to dispose of the client (it will be undefined)
     const client = await pool.connect();
     try {
+      const {
+        name,
+        employmentType,
+        email,
+        homePhone,
+        cellPhone,
+        dateAdded,
+      } = genInfo;
+      const { streetAddress, city, state, zipCode, lat, lon } = addressInfo;
       await client.query("BEGIN");
       const insertGenInfo =
         "INSERT INTO employee_genInfo(name, employmentType, email, homePhone, cellPhone, dateAdded) VALUES($1, $2, $3, $4, $5, $6) RETURNING id";
@@ -83,35 +108,71 @@ class EmployeeTable {
    * @param {Object} addressInfo
    * @param {Number} id
    */
-  static updateEmployee({ genInfo, addressInfo, infoId, addressId }) {
-    const genInfoString = updateString(genInfo);
-    const genInfoValue = Object.values(genInfo);
-    genInfoValue.push(infoId);
-    const idCount = `$${genInfoValue.length}`;
-    const sqlQuery = `UPDATE employee_genInfo SET ${genInfoString} WHERE id = ${idCount}`;
+  static async updateEmployee({ genInfo, addressInfo, infoId, addressId }) {
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      const genInfoString = updateString(genInfo);
+      const genInfoValue = Object.values(genInfo);
+      genInfoValue.push(infoId);
+      const genInfoQuery = `UPDATE employee_genInfo SET ${genInfoString} WHERE id = $${genInfoValue.length}`;
+
+      const addressString = updateString(addressInfo);
+      const addressValue = Object.values(addressInfo);
+      addressValue.push(addressId);
+      const addressQuery = `UPDATE employee_address SET ${addressString} WHERE id = $${addressValue.length}`;
+
+      // Run two query
+      await client.query(genInfoQuery, genInfoValue);
+      await client.query(addressQuery, addressValue);
+
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+  static findNearestDetachment(detachmentId) {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        'SELECT employee.id, info.*, address.* FROM employee LEFT JOIN employee_genInfo info ON info.id = employee."infoId" LEFT JOIN employee_address address ON address.id = employee."addressId"',
+        (error, response) => {
+          if (error) return reject(error);
+          resolve(response.rows);
+        }
+      );
+    });
   }
 }
 
-const genInfo = {
-  name: "Linssen",
-  employmentType: "Junior Dev",
-  email: "linssen@gmail.com",
-  homePhone: 09553092415,
-  cellPhone: 09553092415,
-  dateAdded: new Date(),
-};
+// const genInfo = {
+//   name: "Linssen21",
+//   employmentType: "Junior Dev",
+//   email: "linssen@gmail.com",
+//   homePhone: 09553092415,
+//   cellPhone: 09553092415,
+//   dateAdded: new Date(),
+// };
 
-const addressInfo = {
-  streetAddress: "Dasmariñas, Cavite",
-  city: "Cavite",
-  state: "CALABARZON",
-  zipCode: 4114,
-  lat: 14.299063,
-  lon: 120.949937,
-};
+// const addressInfo = {
+//   streetAddress: "Dasmariñas, Cavite",
+//   city: "Cavite",
+//   state: "CALABARZON",
+//   zipCode: 4114,
+//   lat: 14.299063,
+//   lon: 120.949937,
+// };
 
-EmployeeTable.updateEmployee({ genInfo, addressInfo, infoId: 1 });
+// EmployeeTable.updateEmployee({ genInfo, addressInfo, infoId: 2, addressId: 2 })
+//   .then(() => console.log("success"))
+//   .catch((err) => console.log(err));
 
+// EmployeeTable.getEmployeeInfoAddById(1)
+//   .then((res) => console.log(res))
+//   .catch((err) => console.log(err));
 // EmployeeTable.storeEmployee({ genInfo, addressInfo })
 //   .then((res) => console.log(res))
 //   .catch((err) => console.log(err));

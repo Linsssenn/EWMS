@@ -112,7 +112,7 @@ class DetachmentTable {
     detachValue.push(id);
     const idCount = `$${detachValue.length}`;
     const sqlQuery = `UPDATE detachment SET ${detachString} WHERE id = ${idCount}`;
-    console.log(sqlQuery, detachValue);
+
     return new Promise((resolve, reject) => {
       pool.query(sqlQuery, detachValue, (error, response) => {
         if (error) return reject(error);
@@ -121,6 +121,8 @@ class DetachmentTable {
       });
     });
   }
+
+  static findNearestEmployee(employeeId) {}
 }
 
 // const detach = new Detachment({
