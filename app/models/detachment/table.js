@@ -121,8 +121,20 @@ class DetachmentTable {
       });
     });
   }
-
-  static findNearestEmployee(employeeId) {}
+  // find nearest employee from a detachment
+  static findNearestEmployee(detachmentId) {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        `SELECT employee.id, info.name, address.city, address.lat, address.lon, ST_Distance(ST_Transform(ST_SetSRID(ST_MakePoint(address.lon,address.lat),4326),3857), ST_Transform(ST_SetSRID(ST_MakePoint(detachment.lon
+       ,detachment.lat),4326),3857)) *  0.000621371192  as dist_miles FROM detachment, employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" WHERE detachment.id = $1`,
+        [detachmentId],
+        (error, response) => {
+          if (error) return reject(error);
+          resolve(response.rows);
+        }
+      );
+    });
+  }
 }
 
 // const detach = new Detachment({

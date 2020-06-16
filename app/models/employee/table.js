@@ -24,7 +24,7 @@ class EmployeeTable {
   static getEmployeesInfoAdd() {
     return new Promise((resolve, reject) => {
       pool.query(
-        'SELECT employee.id, info.*, address.* FROM employee LEFT JOIN employee_genInfo info ON info.id = employee."infoId" LEFT JOIN employee_address address ON address.id = employee."addressId"',
+        'SELECT employee.id, info.*, address.* FROM employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId"',
         (error, response) => {
           if (error) return reject(error);
           resolve(response.rows);
@@ -36,7 +36,7 @@ class EmployeeTable {
   static getEmployeeInfoAddById(employeeId) {
     return new Promise((resolve, reject) => {
       pool.query(
-        'SELECT employee.id, info.*, address.* FROM employee LEFT JOIN employee_genInfo info ON info.id = employee."infoId" LEFT JOIN employee_address address ON address.id = employee."addressId" WHERE employee.id = $1',
+        'SELECT employee.id, info.*, address.* FROM employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" WHERE employee.id = $1',
         [employeeId],
         (error, response) => {
           if (error) return reject(error);
@@ -135,10 +135,13 @@ class EmployeeTable {
       client.release();
     }
   }
-  static findNearestDetachment(detachmentId) {
+
+  // Find nearest detachment from an employee's home
+  static findNearestDetachment({ employeeId }) {
     return new Promise((resolve, reject) => {
       pool.query(
-        'SELECT employee.id, info.*, address.* FROM employee LEFT JOIN employee_genInfo info ON info.id = employee."infoId" LEFT JOIN employee_address address ON address.id = employee."addressId"',
+        "SELECT detachment.id, detachment.address AS detachment_address, detachment.name as detachment_name, ST_Distance(ST_Transform(ST_SetSRID(ST_MakePoint(employee_address.lon,employee_address.lat),4326),3857), ST_Transform(ST_SetSRID(ST_MakePoint(detachment.lon,detachment.lat),4326),3857)) *  0.000621371192  as dist_miles FROM employee_address, detachment WHERE employee_address.id = $1;",
+        [employeeId],
         (error, response) => {
           if (error) return reject(error);
           resolve(response.rows);
@@ -147,6 +150,10 @@ class EmployeeTable {
     });
   }
 }
+
+// EmployeeTable.findNearestDetachment({ employeeId: "1" })
+//   .then((res) => console.log(res))
+//   .catch((err) => console.log(err));
 
 // const genInfo = {
 //   name: "Linssen21",
