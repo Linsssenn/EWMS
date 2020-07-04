@@ -11,7 +11,7 @@ dotenv.config({ path: "./config.env" });
 const app = require("../app");
 // runs before the app to read the dotenv config
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 
 const server = app.listen(port, () => {
   console.log(`App listening on port ${port}`);

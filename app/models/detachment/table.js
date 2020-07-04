@@ -1,8 +1,8 @@
 const pool = require("../../../bin/databasePool");
-const detachmentData = require("../../../data/detachment.json");
-const Detachment = require("./index");
 const GeoJsonHelper = require("../helper/geoJson");
 const { expand, flatten, updateString } = require("../helper/queryBuilder");
+const handleAsync = require("../../utils/asyncHandler");
+const Pagination = require("../helper/pagination");
 
 class DetachmentTable {
   static storeDetachment(detachment) {
@@ -21,7 +21,7 @@ class DetachmentTable {
     });
   }
 
-  static storeMultipleDetachments(detachmentArray) {
+  static storeDetachments(detachmentArray) {
     return new Promise((resolve, reject) => {
       const sqlParameter = expand(
         detachmentArray.length,
@@ -35,24 +35,6 @@ class DetachmentTable {
           if (error) return reject(error);
           const detachment = response.rows;
           resolve(detachment);
-        }
-      );
-    });
-  }
-
-  static storeDetachments(detachmentArray) {
-    const detachmentArrString = JSON.stringify(detachmentArray);
-
-    return new Promise((resolve, reject) => {
-      pool.query(
-        `INSERT INTO detachment(name, address, city, zip, lat, lon)
-      SELECT name, address, city, zip, lat, lon FROM jsonb_to_recordset
-      ($1::jsonb) AS t (name text, address text, city text, zip int, lat double precision, lon double precision) RETURNING id`,
-        [detachmentArrString],
-        (error, response) => {
-          if (error) return reject(error);
-          const detachmentIds = response.rows;
-          resolve(detachmentIds);
         }
       );
     });
@@ -73,8 +55,8 @@ class DetachmentTable {
     return new Promise((resolve, reject) => {
       pool.query("SELECT * FROM detachment", (error, response) => {
         if (error) return reject(error);
-        const jsonCoffee = new GeoJsonHelper(response.rows);
-        resolve(jsonCoffee);
+        const detachmentJson = new GeoJsonHelper(response.rows);
+        resolve(detachmentJson);
       });
     });
   }
@@ -92,13 +74,24 @@ class DetachmentTable {
     });
   }
 
-  static getDetachments() {
-    return new Promise((resolve, reject) => {
-      pool.query("SELECT * FROM detachment", (error, response) => {
-        if (error) return reject(error);
-        resolve(response.rows);
-      });
+  static async getDetachments(opts = {}) {
+    const { page, limit, fields, sort } = opts;
+
+    const paginate = new Pagination({
+      table: "detachment",
+      limit,
+      page,
+      fields,
+      sort,
     });
+    const [result, resultErr] = await handleAsync(
+      paginate.paginate().execute()
+    );
+    const [count, countErr] = await handleAsync(paginate.paginate().count());
+
+    if (resultErr) return Promise.reject(resultErr);
+    if (countErr) return Promise.reject(countErr);
+    return { result, count };
   }
 
   /**
@@ -106,7 +99,7 @@ class DetachmentTable {
    * @param {Object} detachment
    * @param {Number} id
    */
-  static updateDetachment(detachment, id) {
+  static updateDetachment({ detachment, id }) {
     const detachString = updateString(detachment);
     const detachValue = Object.values(detachment);
     detachValue.push(id);
@@ -121,13 +114,16 @@ class DetachmentTable {
       });
     });
   }
+
   // find nearest employee from a detachment
-  static findNearestEmployee(detachmentId) {
+  static findNearestEmployee({ opts = {}, id }) {
+    const { page = 1, limit = 10 } = opts;
+    const skip = (page - 1) * limit;
     return new Promise((resolve, reject) => {
       pool.query(
         `SELECT employee.id, info.name, address.city, address.lat, address.lon, ST_Distance(ST_Transform(ST_SetSRID(ST_MakePoint(address.lon,address.lat),4326),3857), ST_Transform(ST_SetSRID(ST_MakePoint(detachment.lon
-       ,detachment.lat),4326),3857)) *  0.000621371192  as dist_miles FROM detachment, employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" WHERE detachment.id = $1`,
-        [detachmentId],
+       ,detachment.lat),4326),3857)) *  0.000621371192  as dist_miles FROM detachment, employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" WHERE detachment.id = $1 ORDER BY dist_miles ASC LIMIT $2 OFFSET $3`,
+        [id, limit, skip],
         (error, response) => {
           if (error) return reject(error);
           resolve(response.rows);
@@ -136,73 +132,5 @@ class DetachmentTable {
     });
   }
 }
-
-// const detach = new Detachment({
-//   name: "Pogi Japanese Restaurant 1000",
-//   address: "Dasmariñas, Cavite",
-//   city: "Cavite",
-//   zip: 4114,
-//   lat: 14.291301,
-//   lon: 120.977593,
-// }).validDetachment();
-// console.log(detach);
-// DetachmentTable.updateDetachment(
-//   {
-//     name: "Pogi Japanese Restaurant 1",
-//     lat: 14.291301,
-//     lon: 120.977593,
-//   },
-//   2
-// )
-//   .then((res) => console.log("success"))
-//   .catch((err) => console.log(err));
-
-// console.time();
-// DetachmentTable.getDetachments()
-//   .then((detachmentData) => console.log(detachmentData))
-//   .catch((error) => console.log(error));
-// console.timeEnd();
-// console.time();
-// DetachmentTable.getDetachmentsGeoJson()
-//   .then((detachmentJson) => {
-//     console.log(detachmentJson);
-//   })
-//   .catch((error) => console.log(error));
-// console.timeEnd();
-
-// console.time();
-// const detachmentArr = [];
-
-// for (let index = 0; index < detachmentData.length; index++) {
-//   const { name, address, city, zip, lat, lon } = detachmentData[index];
-
-//   const detach = new Detachment({
-//     name,
-//     address,
-//     city,
-//     zip,
-//     lat,
-//     lon,
-//   }).validDetachment();
-//   if (detach.hasOwnProperty("success")) {
-//     detachmentArr.push(detach.success);
-//   } else {
-//     // empty array then stop the loop
-//     detachmentArr.splice(0, detachmentArr.length);
-//     detachmentArr.push(detach);
-//     break;
-//   }
-// }
-// if (!detachmentArr[0].error) {
-//   DetachmentTable.storeMultipleDetachments(detachmentArr)
-//     .then((detachmentIds) => console.log(detachmentIds))
-//     .catch((error) => console.log(error));
-// }
-
-// console.timeEnd();
-
-// DetachmentTable.storeDetachment(detachment.success)
-//   .then((detachmentId) => console.log(detachmentId))
-//   .catch((error) => console.log(error));
 
 module.exports = DetachmentTable;

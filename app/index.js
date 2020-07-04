@@ -7,6 +7,7 @@ const AppError = require("./utils/appError");
 
 const accountRouter = require("./routes/authRoutes");
 const detachmentRouter = require("./routes/detachmentRoutes");
+const employeeRouter = require("./routes/employeeRoutes");
 
 const globalErrorHandler = require("./utils/globalErrorHandler");
 
@@ -18,9 +19,6 @@ app.options("*", cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-
-// Routes
-// app.use('/api/v1/users', userRouter);
 
 /**
  * @description - Catch not found routes
@@ -46,6 +44,7 @@ app.use(cookieParser());
 
 app.use("/api/v1/account", accountRouter);
 app.use("/api/v1/detachment", detachmentRouter);
+app.use("/api/v1/employee", employeeRouter);
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });

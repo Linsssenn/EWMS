@@ -49,21 +49,3 @@ class AccountTable {
   }
 }
 module.exports = AccountTable;
-
-// AccountTable.storeAccount({
-//   usernameHash: hash("Hello2"),
-//   passwordHash: "Popo",
-// })
-//   .then((res) => console.log(res))
-//   .catch((err) => console.log(err));
-
-// async function test() {
-//   const [{ account }, accountErr] = await handleAsync(
-//     AccountTable.getAccount({ usernameHash: hash("Hello") })
-//   );
-//   if (account) {
-//     console.log(account.sessionId);
-//   }
-//   console.log(accountErr);
-// }
-// test();
