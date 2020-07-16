@@ -1,10 +1,11 @@
 const pool = require("../../../bin/databasePool");
 const { updateString } = require("../helper/queryBuilder");
-const Pagination = require("../helper/pagination");
+const GeoJsonHelper = require("../helper/geoJson");
+const handleAsync = require("../../utils/asyncHandler");
 
 class EmployeeTable {
   static getEmployees({ opts = {} }) {
-    const { page = 1, limit = 10 } = opts;
+    const { page = 1, limit = 25 } = opts;
     const skip = (page - 1) * limit;
     return new Promise((resolve, reject) => {
       pool.query(
@@ -18,13 +19,14 @@ class EmployeeTable {
     });
   }
 
-  static getEmployee(employeeId) {
+  static getEmployee(id) {
     return new Promise((resolve, reject) => {
       pool.query(
         'SELECT employee.id, info.*, address.* FROM employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" WHERE employee.id = $1',
-        [employeeId],
+        [id],
         (error, response) => {
           if (error) return reject(error);
+
           resolve(response.rows[0]);
         }
       );
@@ -33,10 +35,10 @@ class EmployeeTable {
 
   /**
    * @param {Object} genInfo
-   * @param {Object} addressInfo
+   * @param {Object} address
    */
 
-  static async storeEmployee({ genInfo, addressInfo }) {
+  static async storeEmployee({ info, address }) {
     // note: we don't try/catch this because if connecting throws an exception
     // we don't need to dispose of the client (it will be undefined)
     const client = await pool.connect();
@@ -48,12 +50,13 @@ class EmployeeTable {
         homePhone,
         cellPhone,
         dateAdded,
-      } = genInfo;
-      const { streetAddress, city, state, zipCode, lat, lon } = addressInfo;
+      } = info;
+      const { city, state, zipCode, lat, lon } = address;
       await client.query("BEGIN");
-      const insertGenInfo =
+      const insertInfo =
         "INSERT INTO employee_genInfo(name, employmentType, email, homePhone, cellPhone, dateAdded) VALUES($1, $2, $3, $4, $5, $6) RETURNING id";
-      const genInfoId = await client.query(insertGenInfo, [
+
+      const infoId = await client.query(insertInfo, [
         name,
         employmentType,
         email,
@@ -62,9 +65,8 @@ class EmployeeTable {
         dateAdded,
       ]);
       const insertAddInfo =
-        "INSERT INTO employee_address(streetAddress, city, state, zipCode, lat, lon) VALUES($1, $2, $3, $4, $5, $6) RETURNING id";
-      const addInfoId = await client.query(insertAddInfo, [
-        streetAddress,
+        "INSERT INTO employee_address( city, state, zipCode, lat, lon) VALUES($1, $2, $3, $4, $5) RETURNING id";
+      const addressId = await client.query(insertAddInfo, [
         city,
         state,
         zipCode,
@@ -73,15 +75,16 @@ class EmployeeTable {
       ]);
       const insertEmployee =
         'INSERT INTO employee("infoId", "addressId") VALUES ($1, $2)';
-      console.log(genInfoId.rows[0].id, addInfoId.rows[0].id);
+
       await client.query(insertEmployee, [
-        genInfoId.rows[0].id,
-        addInfoId.rows[0].id,
+        infoId.rows[0].id,
+        addressId.rows[0].id,
       ]);
       await client.query("COMMIT");
       return { message: "Successfully inserted a data" };
     } catch (error) {
       await client.query("ROLLBACK");
+
       throw error;
     } finally {
       client.release();
@@ -90,31 +93,38 @@ class EmployeeTable {
   /**
    *
    * @param {Object} genInfo
-   * @param {Object} addressInfo
+   * @param {Object} address
    * @param {Number} id
    */
-  static async updateEmployee({ genInfo, addressInfo, id }) {
+  static async updateEmployee({ info = {}, address = {}, id }) {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
 
-      const genInfoString = updateString(genInfo);
-      const genInfoValue = Object.values(genInfo);
-      genInfoValue.push(id);
-      const genInfoQuery = `UPDATE employee_genInfo SET ${genInfoString} WHERE id = $${genInfoValue.length}`;
+      const infoString = updateString(info);
+      const infoValue = Object.values(info);
+      infoValue.push(id);
+      const infoQuery = `UPDATE employee_genInfo SET ${infoString} WHERE id = $${infoValue.length}`;
 
-      const addressString = updateString(addressInfo);
-      const addressValue = Object.values(addressInfo);
+      const addressString = updateString(address);
+      const addressValue = Object.values(address);
       addressValue.push(id);
       const addressQuery = `UPDATE employee_address SET ${addressString} WHERE id = $${addressValue.length}`;
 
       // Run two query
-      await client.query(genInfoQuery, genInfoValue);
-      await client.query(addressQuery, addressValue);
+
+      if (!!Object.keys(info).length) {
+        await client.query(infoQuery, infoValue);
+      }
+
+      if (!!Object.keys(address).length) {
+        await client.query(addressQuery, addressValue);
+      }
 
       await client.query("COMMIT");
     } catch (error) {
       await client.query("ROLLBACK");
+
       throw error;
     } finally {
       client.release();
@@ -122,19 +132,29 @@ class EmployeeTable {
   }
 
   // Find nearest detachment from an employee's home
-  static findNearestDetachment({ opts = {}, employeeId }) {
-    const { page = 1, limit = 10 } = opts;
+  static findNearestDetachment({ opts = {}, id }) {
+    const { page = 1, limit = 25 } = opts;
     const skip = (page - 1) * limit;
     return new Promise((resolve, reject) => {
       pool.query(
-        "SELECT detachment.id, detachment.address AS detachment_address, detachment.name as detachment_name, ST_Distance(ST_Transform(ST_SetSRID(ST_MakePoint(employee_address.lon,employee_address.lat),4326),3857), ST_Transform(ST_SetSRID(ST_MakePoint(detachment.lon,detachment.lat),4326),3857)) *  0.000621371192  as dist_miles FROM employee_address, detachment WHERE employee_address.id = $1 ORDER BY dist_miles ASC LIMIT $2 OFFSET $3",
-        [employeeId, limit, skip],
+        "SELECT detachment.id, detachment.address AS detachment_address, detachment.name as detachment_name, detachment.lon, detachment.lat, ST_Distance(ST_Transform(ST_SetSRID(ST_MakePoint(employee_address.lon,employee_address.lat),4326),3857), ST_Transform(ST_SetSRID(ST_MakePoint(detachment.lon,detachment.lat),4326),3857)) *  0.000621371192  as dist_miles FROM employee_address, detachment WHERE employee_address.id = $1 ORDER BY dist_miles ASC LIMIT $2 OFFSET $3",
+        [id, limit, skip],
         (error, response) => {
           if (error) return reject(error);
           resolve(response.rows);
         }
       );
     });
+  }
+
+  static async findNearestDetachmentGeo({ opts = {}, id }) {
+    const [detachment, detachmentErr] = await handleAsync(
+      this.findNearestDetachment({ opts, id })
+    );
+    if (detachmentErr) throw detachmentErr;
+
+    const detachmentJson = new GeoJsonHelper(detachment);
+    return detachmentJson;
   }
 }
 

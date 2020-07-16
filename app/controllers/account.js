@@ -89,11 +89,15 @@ exports.protect = catchAsync(async (req, res, next) => {
       sessionString: sessionString,
     })
   );
+
   // console.log(authAccountErr);
   if (authAccountErr) return next(new AppError(authAccountErr));
   if (!authAccount)
     return next(new AppError("The user is not authenticated", 401));
   if (!authAccount.authenticated)
     return next(new AppError("Session expired", 400));
-  if (authAccount) next();
+  if (authAccount) {
+    req.accountId = authAccount.account.id;
+    next();
+  }
 });

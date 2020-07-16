@@ -39,7 +39,7 @@ class Pagination {
 
   count() {
     return new Promise((resolve, reject) => {
-      const query = `SELECT count(*) as TotalCount FROM ${this.table}`;
+      const query = `SELECT count(*) FROM ${this.table}`;
       pool.query(
         query,
 

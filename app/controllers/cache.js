@@ -3,11 +3,11 @@ const catchAsync = require("../utils/catchAsync");
 
 exports.getCache = catchAsync(async (req, res, next) => {
   const result = await getCache({
-    key: req.cookies.sessionString,
+    key: req.accountId,
     hash: req.originalUrl,
   });
   if (result) {
-    console.log("cache");
+    console.log("cache", req.originalUrl);
     res.status(200).json(result);
   } else {
     next();
@@ -15,6 +15,6 @@ exports.getCache = catchAsync(async (req, res, next) => {
 });
 
 exports.clearHash = catchAsync(async (req, res, next) => {
-  clearHash(req.cookies.sessionString);
+  clearHash(req.accountId);
   next();
 });

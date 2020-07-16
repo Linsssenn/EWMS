@@ -3,22 +3,24 @@ class GeoJsonHelper {
     this.type = "FeatureCollection";
     this.features = this.createFeatures(rows);
   }
+
   createFeatures(rows) {
     const features = [];
     for (let index = 0; index < rows.length; index++) {
-      let { id, name, lat, lon } = rows[index];
+      let { lat, lon } = rows[index];
 
       const geometry = {
         type: "Point",
         coordinates: [lon, lat],
       };
-      const item = {
-        f1: id,
-        f2: name,
-      };
+
+      const excludeFields = ["lon", "lat"];
+      const items = { ...rows[index] };
+      excludeFields.forEach((element) => delete items[element]);
+
       const feature = {
         type: "Feature",
-        properties: item,
+        properties: items,
         geometry,
       };
 

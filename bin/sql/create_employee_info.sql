@@ -3,8 +3,8 @@ CREATE TABLE employee_genInfo (
     name VARCHAR(64),
     employmentType VARCHAR(64),
     email VARCHAR(64),
-    homePhone BIGINT NOT NULL,
-    cellPhone BIGINT NOT NULL,
+    homePhone BIGINT,
+    cellPhone BIGINT,
     dateAdded TIMESTAMP NOT NULL
 );
 

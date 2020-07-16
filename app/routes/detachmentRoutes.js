@@ -11,17 +11,25 @@ router
   .get(cacheController.getCache, detachmentController.getDetachments)
   .post(cacheController.clearHash, detachmentController.storeDetachment);
 
-router.route("/geojson").get(detachmentController.getDetachmentsJson);
+router
+  .route("/geojson")
+  .get(cacheController.getCache, detachmentController.getDetachmentsJson);
 
-router.route("/add-many").post(detachmentController.storeDetachments);
+router
+  .route("/add-many")
+  .post(cacheController.clearHash, detachmentController.storeDetachments);
 
 router
   .route("/:id")
-  .get(detachmentController.getDetachmentById)
-  .put(detachmentController.updateDetachment);
+  .get(cacheController.getCache, detachmentController.getDetachment)
+  .put(cacheController.clearHash, detachmentController.updateDetachment);
 
 router
   .route("/nearest-employee/:id")
-  .get(detachmentController.findNearestEmployee);
+  .get(cacheController.getCache, detachmentController.findNearestEmployee);
+
+router
+  .route("/nearest-employee-geo/:id")
+  .get(cacheController.getCache, detachmentController.findNearestEmployeeGeo);
 
 module.exports = router;

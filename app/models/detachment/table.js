@@ -51,17 +51,23 @@ class DetachmentTable {
     });
   }
 
-  static getDetachmentsGeo() {
+  static getDetachmentsGeo(opts = {}) {
+    const { page = 1, limit = 25 } = opts;
+    const skip = (page - 1) * limit;
     return new Promise((resolve, reject) => {
-      pool.query("SELECT * FROM detachment", (error, response) => {
-        if (error) return reject(error);
-        const detachmentJson = new GeoJsonHelper(response.rows);
-        resolve(detachmentJson);
-      });
+      pool.query(
+        "SELECT * FROM detachment LIMIT $1 OFFSET $2",
+        [limit, skip],
+        (error, response) => {
+          if (error) return reject(error);
+          const detachmentJson = new GeoJsonHelper(response.rows);
+          resolve(detachmentJson);
+        }
+      );
     });
   }
 
-  static getDetachmentById(detachmentId) {
+  static getDetachment(detachmentId) {
     return new Promise((resolve, reject) => {
       pool.query(
         "SELECT * FROM detachment WHERE id = $1",
@@ -84,14 +90,14 @@ class DetachmentTable {
       fields,
       sort,
     });
-    const [result, resultErr] = await handleAsync(
-      paginate.paginate().execute()
+    const [data, dataErr] = await handleAsync(paginate.paginate().execute());
+    const [{ count }, countErr] = await handleAsync(
+      paginate.paginate().count()
     );
-    const [count, countErr] = await handleAsync(paginate.paginate().count());
-
-    if (resultErr) return Promise.reject(resultErr);
-    if (countErr) return Promise.reject(countErr);
-    return { result, count };
+    console.log(countErr);
+    if (dataErr) throw dataErr;
+    if (countErr) throw countErr;
+    return { data, count };
   }
 
   /**
@@ -117,7 +123,7 @@ class DetachmentTable {
 
   // find nearest employee from a detachment
   static findNearestEmployee({ opts = {}, id }) {
-    const { page = 1, limit = 10 } = opts;
+    const { page = 1, limit = 25 } = opts;
     const skip = (page - 1) * limit;
     return new Promise((resolve, reject) => {
       pool.query(
@@ -130,6 +136,16 @@ class DetachmentTable {
         }
       );
     });
+  }
+
+  static async findNearestEmployeeGeo({ opts = {}, id }) {
+    const [employee, employeeErr] = await handleAsync(
+      this.findNearestEmployee({ opts, id })
+    );
+    if (employeeErr) throw employeeErr;
+
+    const employeeJson = new GeoJsonHelper(employee);
+    return employeeJson;
   }
 }
 

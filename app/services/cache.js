@@ -32,23 +32,3 @@ function clearHash(key) {
 }
 
 module.exports = { clearHash, getCache, saveCache };
-// Id, req.originalUrl
-getCache({
-  key: "a5bc9064-0101-4204-a4a9-4b1672e13ffd",
-  hash: "/api/v1/detachment",
-})
-  .then((value) => console.log(value))
-  .catch((err) => console.log(err));
-// const { id } = Session.parse(sessionString);
-// req.url;
-// const data = {
-//   name: "Greenwich",
-//   address: "Greenwich - Robinsons Dasmariñas",
-//   city: "Cavite",
-//   zip: 4114,
-//   lat: 14.299907,
-//   lon: 120.953701,
-// };
-// saveCache({ key: "id", hash: "getDetach", data })
-//   .then((result) => console.log(result))
-//   .catch((err) => console.log(err));
