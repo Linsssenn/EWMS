@@ -5,10 +5,15 @@ import Dashboard from "./pages/Dashboard";
 import NearestEmployee from "./pages/NearestEmployee";
 import Employee from "./pages/Employee";
 import NavRoute from "./hoc/NavRoute";
+import { useDispatch, useSelector } from "react-redux";
 
 const NotFound = () => <div>Not Found</div>;
 
 function App() {
+  const auth = useSelector((state) => state.account);
+
+  console.log(auth);
+
   return (
     <BrowserRouter>
       <Switch>
