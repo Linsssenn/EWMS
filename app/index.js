@@ -13,8 +13,9 @@ const globalErrorHandler = require("./utils/globalErrorHandler");
 
 const app = express();
 
-app.use(cors({ credentials: true }));
+app.use(cors());
 app.options("*", cors());
+// app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -45,6 +46,13 @@ app.use(cookieParser());
 app.use("/api/v1/account", accountRouter);
 app.use("/api/v1/detachment", detachmentRouter);
 app.use("/api/v1/employee", employeeRouter);
+
+// Load Frontend
+// app.use(express.static("client/build"));
+// app.get("*", (req, res) => {
+//   res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+// });
+
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });

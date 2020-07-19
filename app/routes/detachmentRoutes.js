@@ -22,7 +22,7 @@ router
 router
   .route("/:id")
   .get(cacheController.getCache, detachmentController.getDetachment)
-  .put(cacheController.clearHash, detachmentController.updateDetachment);
+  .patch(cacheController.clearHash, detachmentController.updateDetachment);
 
 router
   .route("/nearest-employee/:id")

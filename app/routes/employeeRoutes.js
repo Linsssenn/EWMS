@@ -15,7 +15,7 @@ router
 router
   .route("/:id")
   .get(cacheController.getCache, employeeController.getEmployee)
-  .put(employeeController.updateEmployee);
+  .patch(employeeController.updateEmployee);
 
 router
   .route("/nearest-detachment/:id")

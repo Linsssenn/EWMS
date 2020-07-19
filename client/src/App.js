@@ -4,25 +4,33 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NearestEmployee from "./pages/NearestEmployee";
 import Employee from "./pages/Employee";
-import NavRoute from "./hoc/NavRoute";
-import { useDispatch, useSelector } from "react-redux";
+// import NavRoute from "./hoc/NavRoute";
+import PrivateRoute from "./hoc/PrivateRoute";
+
+// import { useDispatch, useSelector } from "react-redux";
 
 const NotFound = () => <div>Not Found</div>;
 
 function App() {
-  const auth = useSelector((state) => state.account);
-
-  console.log(auth);
+  // const auth = useSelector((state) => state.account);
+  // const dispatch = useDispatch();
+  // React.useEffect(() => {
+  //   console.log("Authenticated Run");
+  //   dispatch(fetchAuthenticated());
+  // }, [dispatch]);
 
   return (
     <BrowserRouter>
       <Switch>
-        <Route exact path="/">
-          <Login />
-        </Route>
-        <NavRoute path="/dashboard" component={Dashboard} />
-        <NavRoute path="/nearest-employee" component={NearestEmployee} />
-        <NavRoute path="/employee" component={Employee} />
+        <Route exact path="/" component={Login} />
+
+        <PrivateRoute exact path="/dashboard" component={Dashboard} />
+        <PrivateRoute
+          exact
+          path="/nearest-employee"
+          component={NearestEmployee}
+        />
+        <PrivateRoute exact path="/employee" component={Employee} />
         <Route component={NotFound} />
       </Switch>
     </BrowserRouter>

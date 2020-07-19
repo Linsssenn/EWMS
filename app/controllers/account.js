@@ -71,10 +71,17 @@ exports.logout = catchAsync(async (req, res, next) => {
 
 exports.authenticated = catchAsync(async (req, res, next) => {
   const { sessionString } = req.cookies;
-  const { authenticated } = await authenticatedAccount(sessionString);
-  if (!authenticated)
+  const [authAccount, authAccountErr] = await handleAsync(
+    authenticatedAccount({
+      sessionString: sessionString,
+    })
+  );
+
+  console.log(authAccountErr);
+  if (authAccountErr) throw authAccountErr;
+  if (!authAccount.authenticated)
     return next(new AppError("The user is not authenticated", 401));
-  res.status(200).json({ authenticated });
+  res.json({ authenticated: authAccount.authenticated });
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -91,9 +98,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   );
 
   // console.log(authAccountErr);
-  if (authAccountErr) return next(new AppError(authAccountErr));
-  if (!authAccount)
-    return next(new AppError("The user is not authenticated", 401));
+  if (authAccountErr) throw authAccountErr;
   if (!authAccount.authenticated)
     return next(new AppError("Session expired", 400));
   if (authAccount) {

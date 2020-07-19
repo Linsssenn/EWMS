@@ -1,5 +1,5 @@
 {
-  "name": "EWMS",
+  "name": "ewms",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,11 @@
     "EWMS": "databasePool.js"
   },
   "scripts": {
-    "dev": "nodemon ./bin/server",
+    "server": "nodemon ./bin/server",
+    "client-install": "npm install --prefix client",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "client-build": "npm run build --prefix client",
     "configure": "bash .\\bin\\configure_db.sh"
   },
   "keywords": [],
@@ -19,6 +23,7 @@
   "dependencies": {
     "base-64": "^0.1.0",
     "body-parser": "^1.19.0",
+    "concurrently": "^5.2.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
@@ -26,6 +31,7 @@
     "express": "^4.17.1",
     "express-validator": "^6.4.0",
     "pg": "^7.18.2",
+    "prop-types": "^15.7.2",
     "redis": "^3.0.2",
     "semantic-ui-css": "^2.4.1",
     "uuid": "^7.0.2",

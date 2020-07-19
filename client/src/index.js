@@ -1,9 +1,9 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import "./index.css";
 
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import { render } from "react-dom";
 
 // Leaflet
 import "leaflet/dist/leaflet.css";
@@ -16,14 +16,18 @@ import { Provider } from "react-redux";
 import middleware from "./middleware";
 import reducer from "./reducers";
 
+import { fetchAuthenticated } from "./actions/account";
+
 const store = createStore(reducer, middleware);
 
-ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById("root")
-);
+store.dispatch(fetchAuthenticated()).then(() => {
+  render(
+    <Provider store={store}>
+      <App />
+    </Provider>,
+    document.getElementById("root")
+  );
+});
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

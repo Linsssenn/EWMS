@@ -49,7 +49,9 @@ const setSessionCookie = ({ sessionString, res }) => {
 
 const authenticatedAccount = async ({ sessionString }) => {
   if (!sessionString || !Session.verify(sessionString)) {
-    return Promise.reject("Invalid Session");
+    const error = new Error("Invalid session");
+    error.statusCode = 400;
+    return Promise.reject(error);
   } else {
     const { username, id } = Session.parse(sessionString);
 
@@ -60,8 +62,8 @@ const authenticatedAccount = async ({ sessionString }) => {
     );
 
     const authenticated = account.sessionId === id;
-    if (accountErr)
-      return Promise.reject("Could not authenticate user session");
+    if (accountErr) return Promise.reject(accountErr);
+
     return Promise.resolve({ account, authenticated, username });
   }
 };
