@@ -11,7 +11,7 @@ import L from "leaflet";
 //   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 // });
 
-export default function Maps() {
+export default function Maps(props) {
   let [location, setLocation] = useState(false);
   let [name, setName] = useState("Default");
   let [latlng, setLatLng] = useState({ lat: 14.216464, lng: 120.97084 });
@@ -26,7 +26,6 @@ export default function Maps() {
   const handleClick = (event) => {
     const map = mapRef.current;
 
-    console.log(map.leafletElement.getZoom());
     if (map != null) {
       map.leafletElement.locate();
       geocoder.reverse(
@@ -39,6 +38,10 @@ export default function Maps() {
       );
       setLocation(true);
       setLatLng(event.latlng);
+      // Props from AddModal
+      if (!!props.toggleLatLong) {
+        props.toggleLatLong({ lat: event.latlng.lat, lon: event.latlng.lng });
+      }
     }
   };
 

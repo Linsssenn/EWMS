@@ -1,0 +1,51 @@
+import { EMPLOYEE } from "./types";
+import { fetchFromAccount } from "./account";
+import fetchApi from "../util/fetchApi";
+
+function addEmployee(info, address, message) {
+  return {
+    type: EMPLOYEE.ADD,
+    info,
+    address,
+    message,
+  };
+}
+
+export const fetchEmployees = ({ page = 1, limit = 10 }) => {
+  return fetchFromAccount({
+    endpoint: `/employee?page=${page}&limit=${limit}`,
+    options: { credentials: "same-origin" },
+    FETCH_TYPE: EMPLOYEE.FETCH,
+    ERROR_TYPE: EMPLOYEE.FETCH_ERROR,
+    SUCCES_TYPE: EMPLOYEE.FETCH_SUCCESS,
+  });
+};
+
+export const fetchEmployee = ({ id }) =>
+  fetchFromAccount({
+    endpoint: `/employee/${id}`,
+    options: { credentials: "same-origin" },
+    FETCH_TYPE: EMPLOYEE.FETCH,
+    ERROR_TYPE: EMPLOYEE.FETCH_ERROR,
+    SUCCES_TYPE: EMPLOYEE.GET,
+  });
+
+export const storeEmployee = ({ info, address }) => {
+  return (dispatch) => {
+    dispatch({ type: EMPLOYEE.FETCH });
+
+    return fetchApi({
+      endpoint: `/employee`,
+      options: {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ info, address }),
+      },
+    })
+      .then((result) => dispatch(addEmployee(info, address, result.message)))
+      .catch((error) =>
+        dispatch({ type: EMPLOYEE.FETCH_ERROR, message: error.message })
+      );
+  };
+};

@@ -1,86 +1,47 @@
-import React from "react";
-import { Table } from "semantic-ui-react";
+import React, { Component } from "react";
+import { Table, Button, Icon } from "semantic-ui-react";
 
-export default function ReusedTable() {
-  return (
-    <Table celled>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell>Name</Table.HeaderCell>
-          <Table.HeaderCell>City</Table.HeaderCell>
-          <Table.HeaderCell>Distance</Table.HeaderCell>
-          <Table.HeaderCell>Distance</Table.HeaderCell>
-        </Table.Row>
-      </Table.Header>
+const columnHeader = ["Name", "City"];
 
-      <Table.Body>
-        <Table.Row>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-        </Table.Row>
-        <Table.Row>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-        </Table.Row>
-        <Table.Row>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-        </Table.Row>
-        <Table.Row>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-        </Table.Row>
-        <Table.Row>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-        </Table.Row>
-        <Table.Row>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-        </Table.Row>
-        <Table.Row>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-        </Table.Row>
-        <Table.Row>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-        </Table.Row>
-        <Table.Row>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-        </Table.Row>
-        <Table.Row>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-        </Table.Row>
-        <Table.Row>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-          <Table.Cell>Cell</Table.Cell>
-        </Table.Row>
-      </Table.Body>
-    </Table>
-  );
+class ReusedTable extends Component {
+  generateHeader = () => {
+    let result = [];
+
+    for (let index = 0; index < columnHeader.length; index++) {
+      result.push(
+        <Table.HeaderCell key={index}>{columnHeader[index]}</Table.HeaderCell>
+      );
+    }
+    return result;
+  };
+
+  generateBody = (data) =>
+    !!data &&
+    data.map((value, index) => (
+      <Table.Row key={index}>
+        <Table.Cell>{value.name}</Table.Cell>
+        <Table.Cell>{value.city}</Table.Cell>
+        <Table.Cell>
+          <Button icon labelPosition="left" color="teal">
+            <Icon name="edit" /> UPDATE
+          </Button>
+        </Table.Cell>
+      </Table.Row>
+    ));
+
+  render() {
+    const { data } = this.props;
+
+    return (
+      <Table celled size="large">
+        <Table.Header>
+          <Table.Row>{this.generateHeader()}</Table.Row>
+        </Table.Header>
+
+        <Table.Body>{this.generateBody(data)}</Table.Body>
+      </Table>
+    );
+  }
 }
+
+export default ReusedTable;

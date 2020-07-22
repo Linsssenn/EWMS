@@ -19,6 +19,15 @@ class EmployeeTable {
     });
   }
 
+  static countEmployee() {
+    return new Promise((resolve, reject) => {
+      pool.query("SELECT COUNT(*) from employee", (error, response) => {
+        if (error) return reject(error);
+        resolve(response.rows[0]);
+      });
+    });
+  }
+
   static getEmployee(id) {
     return new Promise((resolve, reject) => {
       pool.query(

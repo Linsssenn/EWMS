@@ -26,14 +26,17 @@ exports.getEmployees = catchAsync(async (req, res, next) => {
   const [employees, employeesErr] = await handleAsync(
     EmployeeTable.getEmployees({ opts: req.query })
   );
-  if (employeesErr)
+  const [{ count }, countErr] = await handleAsync(
+    EmployeeTable.countEmployee()
+  );
+  if (employeesErr || countErr)
     return next(new AppError("There was an error in fetching the data", 400));
 
-  res.status(200).json({ data: employees });
+  res.status(200).json({ data: employees, count });
   await saveCache({
     key: req.accountId,
     hash: req.originalUrl,
-    data: { data: employees },
+    data: { data: employees, count },
   });
 });
 

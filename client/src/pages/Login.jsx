@@ -29,12 +29,14 @@ class Login extends Component {
     }
   }
 
+  // unsafe according to Docs
   // componentWillReceiveProps(nextProps) {
   //   if (nextProps.account.loggedIn) {
   //     nextProps.history.push("/dashboard");
   //   }
   // }
 
+  // re-renders due to changes to props or state
   static getDerivedStateFromProps(props, state) {
     if (props.account.loggedIn) {
       props.history.push("/dashboard");
