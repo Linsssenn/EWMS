@@ -18,11 +18,11 @@ class Employee {
   }
 
   createAddress(address) {
-    const { city, state, zipCode, lat, lon } = address;
+    const { city, region, zipCode, lat, lon } = address;
 
     return {
       city: city || "",
-      state: state || "",
+      region: region || "",
       zipCode: zipCode || null,
       lat: lat || null,
       lon: lon || null,

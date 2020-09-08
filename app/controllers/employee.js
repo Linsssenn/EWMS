@@ -22,6 +22,23 @@ exports.getEmployee = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getEmployeeName = catchAsync(async (req, res, next) => {
+  const { search } = req.query;
+
+  const [employee, employeeErr] = await handleAsync(
+    EmployeeTable.getEmployeeByName({ name: search, opts: req.query })
+  );
+  if (employeeErr)
+    return next(new AppError("There was an error in fetching the data", 400));
+
+  res.status(200).json({ data: employee });
+  await saveCache({
+    key: req.accountId,
+    hash: req.originalUrl,
+    data: { data: employee },
+  });
+});
+
 exports.getEmployees = catchAsync(async (req, res, next) => {
   const [employees, employeesErr] = await handleAsync(
     EmployeeTable.getEmployees({ opts: req.query })
@@ -45,7 +62,7 @@ exports.storeEmployee = catchAsync(async (req, res, next) => {
 
   const newEmployee = new Employee({ info, address });
 
-  const [employees, employeeErr] = await handleAsync(
+  const [id, employeeErr] = await handleAsync(
     EmployeeTable.storeEmployee({
       info: newEmployee.info,
       address: newEmployee.address,
@@ -53,7 +70,7 @@ exports.storeEmployee = catchAsync(async (req, res, next) => {
   );
   if (employeeErr)
     return next(new AppError("There was an error in fetching the data", 400));
-  res.status(200).json({ message: "Employee added succesfully" });
+  res.status(200).json({ message: "Employee added succesfully", id });
 });
 
 exports.updateEmployee = catchAsync(async (req, res, next) => {
@@ -67,8 +84,7 @@ exports.updateEmployee = catchAsync(async (req, res, next) => {
       id,
     })
   );
-  if (employeeErr)
-    return next(new AppError("There was an error in fetching the data", 400));
+  if (employeeErr) return next(new AppError(employeeErr.message, 500));
   res.status(200).json({ message: "Employee updated succesfully" });
 });
 

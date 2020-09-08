@@ -1,8 +1,17 @@
 import React, { Component } from "react";
-import { Modal, Grid, Button, Icon, Form, Segment } from "semantic-ui-react";
+import {
+  Modal,
+  Grid,
+  Button,
+  Icon,
+  Form,
+  Segment,
+  Message,
+} from "semantic-ui-react";
 import Maps from "./Maps";
 import { storeEmployee } from "../actions/employee";
 import { connect } from "react-redux";
+import fetchState from "../reducers/fetchStates";
 
 const infoFields = [
   "name",
@@ -11,11 +20,12 @@ const infoFields = [
   "homePhone",
   "cellPhone",
 ];
-const addressFields = ["lat", "lon"];
+
+const addressFields = ["lat", "lon", "city", "region", "zipCode"];
 const info = infoFields.reduce((a, b) => ((a[b] = ""), a), {});
 const address = addressFields.reduce((a, b) => ((a[b] = ""), a), {});
 
-const initialState = { info, address };
+const initialState = { info, address, buttonClicked: false };
 class AddModal extends Component {
   constructor(props) {
     super(props);
@@ -39,13 +49,13 @@ class AddModal extends Component {
 
       return (
         <Form.Input
-          key={`${index}${value}`}
+          key={`${index}`}
           label={value.toUpperCase()}
           fluid
           required
           name={value}
           onChange={this.onChange}
-          value={activeValue}
+          value={activeValue || ""}
         />
       );
     });
@@ -53,8 +63,6 @@ class AddModal extends Component {
   /**@param {event} event */
 
   onChange = (event) => {
-    console.log(this.state);
-
     const { name, value } = event.target;
     if (infoFields.includes(name)) {
       this.setState((prevState) => ({
@@ -71,7 +79,6 @@ class AddModal extends Component {
     event.preventDefault();
     const { address, info } = this.state;
     this.props.storeEmployee({ info: info, address: address });
-    console.log(this.state);
   };
 
   close = () => {
@@ -80,7 +87,7 @@ class AddModal extends Component {
   };
 
   render() {
-    const { modal } = this.props;
+    const { modal, employee } = this.props;
 
     return (
       <Modal
@@ -89,10 +96,20 @@ class AddModal extends Component {
         onSubmit={this.handleSubmit}
         open={modal}
         onClose={this.close}
-        // onSubmit={this.handleSubmit()}
       >
         <Modal.Header>Add an Employee</Modal.Header>
         <Modal.Content scrolling>
+          {employee.status === fetchState.error && (
+            <Message negative>
+              <Message.Header>Error</Message.Header>
+              <Message.Content>{employee.message}</Message.Content>
+            </Message>
+          )}
+          {employee.message && employee.status === fetchState.success && (
+            <Message>
+              <Message.Content>{employee.message}</Message.Content>
+            </Message>
+          )}
           <Grid stackable columns={2} textAlign="left">
             <Grid.Column>
               {this.createInput(infoFields)}

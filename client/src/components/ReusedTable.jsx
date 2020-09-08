@@ -1,26 +1,30 @@
 import React, { Component } from "react";
 import { Table, Button, Icon } from "semantic-ui-react";
 
-const columnHeader = ["Name", "City"];
-
 class ReusedTable extends Component {
-  generateHeader = () => {
+  generateHeader = (header) => {
     let result = [];
 
-    for (let index = 0; index < columnHeader.length; index++) {
+    for (let index = 0; index < header.length; index++) {
       result.push(
-        <Table.HeaderCell key={index}>{columnHeader[index]}</Table.HeaderCell>
+        <Table.HeaderCell key={index}>
+          {/* Convert first letter to uppercase */}
+          {header[index].charAt(0).toUpperCase() + header[index].slice(1)}
+        </Table.HeaderCell>
       );
     }
     return result;
   };
 
-  generateBody = (data) =>
+  generateBody = (data, header) =>
     !!data &&
     data.map((value, index) => (
       <Table.Row key={index}>
-        <Table.Cell>{value.name}</Table.Cell>
-        <Table.Cell>{value.city}</Table.Cell>
+        {!!header &&
+          header.map((header, index) => (
+            <Table.Cell key={`${header}${index}`}>{value[header]}</Table.Cell>
+          ))}
+
         <Table.Cell>
           <Button icon labelPosition="left" color="teal">
             <Icon name="edit" /> UPDATE
@@ -30,15 +34,15 @@ class ReusedTable extends Component {
     ));
 
   render() {
-    const { data } = this.props;
+    const { data, header } = this.props;
 
     return (
       <Table celled size="large">
         <Table.Header>
-          <Table.Row>{this.generateHeader()}</Table.Row>
+          <Table.Row>{this.generateHeader(header)}</Table.Row>
         </Table.Header>
 
-        <Table.Body>{this.generateBody(data)}</Table.Body>
+        <Table.Body>{this.generateBody(data, header)}</Table.Body>
       </Table>
     );
   }

@@ -7,12 +7,30 @@ class EmployeeTable {
   static getEmployees({ opts = {} }) {
     const { page = 1, limit = 25 } = opts;
     const skip = (page - 1) * limit;
+    console.log(skip);
     return new Promise((resolve, reject) => {
       pool.query(
-        'SELECT employee.id, info.*, address.* FROM employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" LIMIT $1 OFFSET $2',
+        'SELECT employee.id, info.name,  info.employmentType, info.email, info.homePhone, info.cellPhone, info.dateAdded, address.city, address.region, address.zipCode, address.lat, address.lon, address.geom  FROM employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" LIMIT $1 OFFSET $2',
         [limit, skip],
         (error, response) => {
           if (error) return reject(error);
+          resolve(response.rows);
+        }
+      );
+    });
+  }
+
+  static getEmployeeByName({ opts = {}, name }) {
+    const { page = 1, limit = 25 } = opts;
+    const skip = (page - 1) * limit;
+    return new Promise((resolve, reject) => {
+      pool.query(
+        'SELECT employee.id, info.name,  info.employmentType, info.email, info.homePhone, info.cellPhone, info.dateAdded, address.city, address.region, address.zipCode, address.lat, address.lon, address.geom  FROM employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" WHERE info.name LIKE $1 LIMIT $2 OFFSET $3',
+        [`${name}%`, limit, skip],
+        (error, response) => {
+          console.log(response.rows[0]);
+          if (error) return reject(error);
+
           resolve(response.rows);
         }
       );
@@ -31,7 +49,7 @@ class EmployeeTable {
   static getEmployee(id) {
     return new Promise((resolve, reject) => {
       pool.query(
-        'SELECT employee.id, info.*, address.* FROM employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" WHERE employee.id = $1',
+        'SELECT employee.id, info.name,  info.employmentType, info.email, info.homePhone, info.cellPhone, info.dateAdded, address.city, address.region, address.zipCode, address.lat, address.lon, address.geom  FROM employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" WHERE employee.id = $1',
         [id],
         (error, response) => {
           if (error) return reject(error);
@@ -60,7 +78,7 @@ class EmployeeTable {
         cellPhone,
         dateAdded,
       } = info;
-      const { city, state, zipCode, lat, lon } = address;
+      const { city, region, zipCode, lat, lon } = address;
       await client.query("BEGIN");
       const insertInfo =
         "INSERT INTO employee_genInfo(name, employmentType, email, homePhone, cellPhone, dateAdded) VALUES($1, $2, $3, $4, $5, $6) RETURNING id";
@@ -74,23 +92,23 @@ class EmployeeTable {
         dateAdded,
       ]);
       const insertAddInfo =
-        "INSERT INTO employee_address( city, state, zipCode, lat, lon) VALUES($1, $2, $3, $4, $5) RETURNING id";
+        "INSERT INTO employee_address( city, region, zipCode, lat, lon) VALUES($1, $2, $3, $4, $5) RETURNING id";
       const addressId = await client.query(insertAddInfo, [
         city,
-        state,
+        region,
         zipCode,
         lat,
         lon,
       ]);
       const insertEmployee =
-        'INSERT INTO employee("infoId", "addressId") VALUES ($1, $2)';
+        'INSERT INTO employee("infoId", "addressId") VALUES ($1, $2) RETURNING id';
 
-      await client.query(insertEmployee, [
+      const employee = await client.query(insertEmployee, [
         infoId.rows[0].id,
         addressId.rows[0].id,
       ]);
       await client.query("COMMIT");
-      return { message: "Successfully inserted a data" };
+      return employee.rows[0].id;
     } catch (error) {
       await client.query("ROLLBACK");
 
@@ -109,15 +127,19 @@ class EmployeeTable {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
+      // Select the two ID's
+      const res = await client.query("SELECT * from employee WHERE id = $1", [
+        id,
+      ]);
 
       const infoString = updateString(info);
       const infoValue = Object.values(info);
-      infoValue.push(id);
+      infoValue.push(res.rows[0].infoId);
       const infoQuery = `UPDATE employee_genInfo SET ${infoString} WHERE id = $${infoValue.length}`;
 
       const addressString = updateString(address);
       const addressValue = Object.values(address);
-      addressValue.push(id);
+      addressValue.push(res.rows[0].addressId);
       const addressQuery = `UPDATE employee_address SET ${addressString} WHERE id = $${addressValue.length}`;
 
       // Run two query

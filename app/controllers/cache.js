@@ -7,7 +7,7 @@ exports.getCache = catchAsync(async (req, res, next) => {
     hash: req.originalUrl,
   });
   if (result) {
-    console.log("cache", req.originalUrl);
+    // console.log("cache", req.originalUrl);
     res.status(200).json(result);
   } else {
     next();

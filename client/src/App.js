@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import NearestEmployee from "./pages/NearestEmployee";
 import Employee from "./pages/Employee";
+import Detachment from "./pages/Detachment";
 // import NavRoute from "./hoc/NavRoute";
 import PrivateRoute from "./hoc/PrivateRoute";
 
@@ -31,6 +32,7 @@ function App() {
           component={NearestEmployee}
         />
         <PrivateRoute exact path="/employee" component={Employee} />
+        <PrivateRoute exact path="/detachment" component={Detachment} />
         <Route component={NotFound} />
       </Switch>
     </BrowserRouter>

@@ -11,11 +11,11 @@ import {
   Icon,
   Pagination,
 } from "semantic-ui-react";
-import Maps from "../components/Maps";
+import DisplayMap from "../components/DisplayMap";
 import { connect } from "react-redux";
 import { fetchEmployees, fetchEmployee } from "../actions/employee";
 import PropTypes from "prop-types";
-// import queryString from "query-string";
+import queryString from "query-string";
 import fetchStates from "../reducers/fetchStates";
 import getNumber from "../util/getNumber";
 import Spinner from "../components/Spinner";
@@ -34,8 +34,9 @@ class Employee extends Component {
   }
 
   componentDidMount() {
-    // const parsed = queryString.parse(this.props.location.search);
-    // const { page, limit } = parsed;
+    const parsed = queryString.parse(this.props.location.search);
+    const { page, limit } = parsed;
+    console.log(parsed);
     // this.setState({ page });
     // this.props.fetchEmployees(parsed);
     this.props.fetchEmployees({});
@@ -88,7 +89,7 @@ class Employee extends Component {
             >
               <Icon name="add" /> ADD EMPLOYEE
             </Button>
-            <ReusedTable data={employees} />
+            <ReusedTable data={employees} header={["id", "name", "city"]} />
             <Pagination
               onPageChange={this.onPageChange}
               defaultActivePage={!page ? 1 : page}
@@ -99,7 +100,7 @@ class Employee extends Component {
           </Grid.Column>
           <Grid.Column>
             <Segment>
-              <Maps />
+              <DisplayMap data={employees} type={"employee"} />
             </Segment>
           </Grid.Column>
         </Grid>

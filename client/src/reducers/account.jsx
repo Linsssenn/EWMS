@@ -33,6 +33,7 @@ const account = (state = DEFAULT_ACCOUNT, action) => {
         status: fetchStates.success,
         message: action.message,
         loggedIn: action.authenticated,
+        username: action.username,
       };
 
     default:

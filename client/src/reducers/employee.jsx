@@ -30,13 +30,13 @@ const employee = (state = DEFAULT_EMPLOYEE, action) => {
         employee: action.data,
       };
     case EMPLOYEE.ADD:
-      const { message, info, address } = action;
+      const { result, info, address } = action;
+      const addedEmployee = { id: result.id, ...info, ...address };
       return {
         ...state,
+        employees: [addedEmployee, ...state.employees],
         status: fetchStates.success,
-        message: message,
-        info: info,
-        address: address,
+        message: result.message,
       };
     default:
       return state;

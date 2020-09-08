@@ -77,11 +77,13 @@ exports.authenticated = catchAsync(async (req, res, next) => {
     })
   );
 
-  console.log(authAccountErr);
   if (authAccountErr) throw authAccountErr;
   if (!authAccount.authenticated)
     return next(new AppError("The user is not authenticated", 401));
-  res.json({ authenticated: authAccount.authenticated });
+  res.json({
+    authenticated: authAccount.authenticated,
+    username: authAccount.username,
+  });
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -97,7 +99,6 @@ exports.protect = catchAsync(async (req, res, next) => {
     })
   );
 
-  // console.log(authAccountErr);
   if (authAccountErr) throw authAccountErr;
   if (!authAccount.authenticated)
     return next(new AppError("Session expired", 400));

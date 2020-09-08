@@ -1,7 +1,7 @@
 CREATE TABLE employee_address (
     id      SERIAL PRIMARY KEY,
     city VARCHAR(64),
-    state VARCHAR(64),
+    region VARCHAR(64),
     zipCode INTEGER,
     lat numeric,
 	lon numeric,

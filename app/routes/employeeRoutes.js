@@ -10,12 +10,16 @@ router.use(accountController.protect);
 router
   .route("/")
   .get(cacheController.getCache, employeeController.getEmployees)
-  .post(employeeController.storeEmployee);
+  .post(cacheController.clearHash, employeeController.storeEmployee);
+
+router
+  .route("/name/")
+  .get(cacheController.getCache, employeeController.getEmployeeName);
 
 router
   .route("/:id")
   .get(cacheController.getCache, employeeController.getEmployee)
-  .patch(employeeController.updateEmployee);
+  .patch(cacheController.clearHash, employeeController.updateEmployee);
 
 router
   .route("/nearest-detachment/:id")

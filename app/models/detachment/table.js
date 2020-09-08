@@ -94,7 +94,7 @@ class DetachmentTable {
     const [{ count }, countErr] = await handleAsync(
       paginate.paginate().count()
     );
-    console.log(countErr);
+
     if (dataErr) throw dataErr;
     if (countErr) throw countErr;
     return { data, count };
