@@ -12,7 +12,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-export default function DisplayMap(props) {
+const DisplayMap = (props, ref) => {
   const DEFAULT_POSITION = [14.216464, 120.97084];
   const homeIcon = new L.Icon({
     iconUrl: home,
@@ -29,6 +29,7 @@ export default function DisplayMap(props) {
     <Map
       center={DEFAULT_POSITION}
       zoom={13}
+      ref={ref}
       style={{ width: "100%", height: "500px", zIndex: 0 }}
     >
       <TileLayer
@@ -48,4 +49,6 @@ export default function DisplayMap(props) {
       </Marker> */}
     </Map>
   );
-}
+};
+
+export default React.forwardRef(DisplayMap);

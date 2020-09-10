@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import { connect } from "react-redux";
 import { fetchDetachments } from "../actions/detachment";
 import PropTypes from "prop-types";
@@ -24,7 +24,7 @@ const DEFAULT_LIMIT = 10;
 class Detachment extends Component {
   constructor(props) {
     super(props);
-
+    this.mapRef = createRef();
     this.state = {
       page: 1,
     };
@@ -72,7 +72,11 @@ class Detachment extends Component {
             <Button icon labelPosition="left" color="teal">
               <Icon name="add" /> ADD DETACHMENT
             </Button>
-            <ReusedTable data={detachments} header={["id", "name", "city"]} />
+            <ReusedTable
+              data={detachments}
+              header={["id", "name", "city"]}
+              mapRef={this.mapRef}
+            />
             <Pagination
               onPageChange={this.onPageChange}
               defaultActivePage={!page ? 1 : page}
@@ -83,7 +87,7 @@ class Detachment extends Component {
           </Grid.Column>
           <Grid.Column>
             <Segment>
-              <DisplayMap data={detachments} />
+              <DisplayMap data={detachments} ref={this.mapRef} />
             </Segment>
           </Grid.Column>
         </Grid>

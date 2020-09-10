@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, createRef } from "react";
 import ReusedTable from "../components/ReusedTable";
 import {
   Button,
@@ -26,7 +26,7 @@ const DEFAULT_LIMIT = 10;
 class Employee extends Component {
   constructor(props) {
     super(props);
-
+    this.mapRef = createRef();
     this.state = {
       page: 1,
       modal: false,
@@ -89,7 +89,11 @@ class Employee extends Component {
             >
               <Icon name="add" /> ADD EMPLOYEE
             </Button>
-            <ReusedTable data={employees} header={["id", "name", "city"]} />
+            <ReusedTable
+              data={employees}
+              header={["id", "name", "city"]}
+              mapRef={this.mapRef}
+            />
             <Pagination
               onPageChange={this.onPageChange}
               defaultActivePage={!page ? 1 : page}
@@ -100,7 +104,11 @@ class Employee extends Component {
           </Grid.Column>
           <Grid.Column>
             <Segment>
-              <DisplayMap data={employees} type={"employee"} />
+              <DisplayMap
+                data={employees}
+                type={"employee"}
+                ref={this.mapRef}
+              />
             </Segment>
           </Grid.Column>
         </Grid>

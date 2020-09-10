@@ -16,7 +16,7 @@ class ReusedTable extends Component {
     return result;
   };
 
-  generateBody = (data, header) =>
+  generateBody = (data, header, locate) =>
     !!data &&
     data.map((value, index) => (
       <Table.Row key={index}>
@@ -26,12 +26,26 @@ class ReusedTable extends Component {
           ))}
 
         <Table.Cell>
-          <Button icon labelPosition="left" color="teal">
-            <Icon name="edit" /> UPDATE
+          <Button
+            icon
+            labelPosition="left"
+            color="teal"
+            onClick={() => this.flyTo(value.lat, value.lon)}
+          >
+            <Icon name="location arrow" /> LOCATE
           </Button>
         </Table.Cell>
       </Table.Row>
     ));
+
+  flyTo = (lat, lang) => {
+    // Forwaded refs
+    const map = this.props.mapRef.current;
+
+    if (map && lat && lang != null) {
+      map.leafletElement.flyTo([lat, lang], 16);
+    }
+  };
 
   render() {
     const { data, header } = this.props;
