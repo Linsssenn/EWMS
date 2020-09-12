@@ -9,7 +9,7 @@ import { render } from "react-dom";
 import "leaflet/dist/leaflet.css";
 import "semantic-ui-css/semantic.min.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder";
-
+import "react-leaflet-markercluster/dist/styles.min.css";
 // Redux
 import { createStore } from "redux";
 import { Provider } from "react-redux";

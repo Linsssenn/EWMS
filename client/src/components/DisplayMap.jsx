@@ -1,6 +1,6 @@
 import React from "react";
-import { Map, TileLayer, Marker, Popup } from "react-leaflet";
-import GeoJsonLayer from "./GeoJsonLayer";
+import { Map, TileLayer } from "react-leaflet";
+import GeoJsonLayerMapCluster from "./GeoJsonLayerMapCluster";
 
 import L from "leaflet";
 import home from "../assets/home.png";
@@ -31,14 +31,16 @@ const DisplayMap = (props, ref) => {
       zoom={13}
       ref={ref}
       style={{ width: "100%", height: "500px", zIndex: 0 }}
+      className="markercluster-map"
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       />
-      <GeoJsonLayer
+      <GeoJsonLayerMapCluster
         data={data}
         custom={type === "employee" ? homeIcon : false}
+        cluster={true}
       />
       {/* <Marker icon={homeIcon} position={DEFAULT_POSITION}>
         <Popup>
