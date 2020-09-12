@@ -81,6 +81,10 @@ class AddModal extends Component {
     this.props.storeEmployee({ info: info, address: address });
   };
 
+  // componentWillUnmount() {
+  //   this.setState(initialState);
+  // }
+
   close = () => {
     this.setState(initialState);
     this.props.closeModal();

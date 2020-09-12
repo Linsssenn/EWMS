@@ -19,6 +19,15 @@ const detachment = (state = DEFAULT_DETACHMENT, action) => {
         detachments: action.data,
         count: action.count,
       };
+    case DETACHMENT.ADD:
+      const { result, detachment } = action;
+      const addDetachment = { id: result.id, ...detachment };
+      return {
+        ...state,
+        detachments: [addDetachment, ...state.detachments],
+        status: fetchStates.success,
+        message: result.message,
+      };
     default:
       return state;
   }

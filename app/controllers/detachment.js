@@ -32,12 +32,12 @@ exports.storeDetachment = catchAsync(async (req, res, next) => {
   }).validDetachment(); // replace if express-validator is implemented
   if (detach.hasOwnProperty("error"))
     return next(new AppError("Validation Error", 400, detach.error));
-  const [detachment, detachmentErr] = await handleAsync(
+  const [id, detachmentErr] = await handleAsync(
     DetachmentTable.storeDetachment(detach.success)
   );
   if (detachmentErr)
     return next(new AppError("There was an error in fetching the data", 400));
-  res.status(200).json({ message: "adding new detachment success" });
+  res.status(200).json({ message: "adding new detachment success", id });
 });
 
 exports.storeDetachments = catchAsync(async (req, res, next) => {

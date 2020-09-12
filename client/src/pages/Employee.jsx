@@ -19,7 +19,7 @@ import queryString from "query-string";
 import fetchStates from "../reducers/fetchStates";
 import getNumber from "../util/getNumber";
 import Spinner from "../components/Spinner";
-import AddModal from "../components/AddModal";
+import AddModalEmployee from "../components/AddModalEmployee";
 
 const DEFAULT_LIMIT = 10;
 
@@ -30,6 +30,7 @@ class Employee extends Component {
     this.state = {
       page: 1,
       modal: false,
+      search: "",
     };
   }
 
@@ -47,9 +48,23 @@ class Employee extends Component {
     this.props.fetchEmployees({ page: data.activePage, limit: DEFAULT_LIMIT });
   };
 
-  openModal = () => this.setState({ modal: true });
+  /**@param {event} event */
+  onChange = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value,
+    });
+  };
 
-  closeModal = () => this.setState({ modal: false });
+  onSearch = () => {
+    const { search } = this.state;
+
+    this.props.fetchEmployees({ search: search });
+  };
+
+  toggleModal = () => this.setState({ modal: !this.state.modal });
+  // openModal = () => this.setState({ modal: true });
+
+  // closeModal = () => this.setState({ modal: false });
 
   render() {
     const { status, employees, count } = this.props.employee;
@@ -74,15 +89,22 @@ class Employee extends Component {
                 style={{ width: "100%" }}
                 placeholder="Enter name of Employee"
                 size="large"
+                name="search"
+                onChange={this.onChange}
               />
               <Divider hidden />
-              <Button icon labelPosition="left" color="teal">
+              <Button
+                icon
+                labelPosition="left"
+                color="teal"
+                onClick={this.onSearch}
+              >
                 <Icon name="search" /> SEARCH EMPLOYEE
               </Button>
             </Segment>
             <Divider hidden />
             <Button
-              onClick={this.openModal}
+              onClick={this.toggleModal}
               icon
               labelPosition="left"
               color="teal"
@@ -112,10 +134,10 @@ class Employee extends Component {
             </Segment>
           </Grid.Column>
         </Grid>
-        <AddModal
+        <AddModalEmployee
           title={"Add an Employee"}
           modal={modal}
-          closeModal={this.closeModal}
+          closeModal={this.toggleModal}
         />
       </Container>
     );

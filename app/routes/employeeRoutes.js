@@ -13,10 +13,6 @@ router
   .post(cacheController.clearHash, employeeController.storeEmployee);
 
 router
-  .route("/name/")
-  .get(cacheController.getCache, employeeController.getEmployeeName);
-
-router
   .route("/:id")
   .get(cacheController.getCache, employeeController.getEmployee)
   .patch(cacheController.clearHash, employeeController.updateEmployee);

@@ -18,6 +18,7 @@ import {
 import fetchStates from "../reducers/fetchStates";
 import Spinner from "../components/Spinner";
 import getNumber from "../util/getNumber";
+import AddModalDetachment from "../components/AddModalDetachment";
 
 const DEFAULT_LIMIT = 10;
 
@@ -27,6 +28,8 @@ class Detachment extends Component {
     this.mapRef = createRef();
     this.state = {
       page: 1,
+      search: "",
+      modal: false,
     };
   }
 
@@ -42,9 +45,23 @@ class Detachment extends Component {
     });
   };
 
+  /**@param {event} event */
+  onChange = (event) => {
+    this.setState({
+      [event.target.name]: event.target.value,
+    });
+  };
+  onSearch = () => {
+    const { search } = this.state;
+
+    this.props.fetchDetachments({ search: search });
+  };
+
+  toggleModal = () => this.setState({ modal: !this.state.modal });
+
   render() {
     const { status, count, detachments } = this.props.detachment;
-    const { page } = this.state;
+    const { page, modal } = this.state;
     if (status === fetchStates.fetching) {
       return (
         <div style={{ marginTop: "8em" }}>
@@ -60,16 +77,28 @@ class Detachment extends Component {
               <Header as="h3">Find Detachment</Header>
               <Input
                 style={{ width: "100%" }}
-                placeholder="Enter name of Employee"
+                placeholder="Enter name of Detachment"
                 size="large"
+                name="search"
+                onChange={this.onChange}
               />
               <Divider hidden />
-              <Button icon labelPosition="left" color="teal">
+              <Button
+                icon
+                labelPosition="left"
+                color="teal"
+                onClick={this.onSearch}
+              >
                 <Icon name="search" /> SEARCH DETACHMENT
               </Button>
             </Segment>
             <Divider hidden />
-            <Button icon labelPosition="left" color="teal">
+            <Button
+              icon
+              labelPosition="left"
+              color="teal"
+              onClick={this.toggleModal}
+            >
               <Icon name="add" /> ADD DETACHMENT
             </Button>
             <ReusedTable
@@ -91,6 +120,7 @@ class Detachment extends Component {
             </Segment>
           </Grid.Column>
         </Grid>
+        <AddModalDetachment modal={modal} closeModal={this.toggleModal} />
       </Container>
     );
   }

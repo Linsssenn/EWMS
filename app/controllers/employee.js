@@ -22,23 +22,6 @@ exports.getEmployee = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getEmployeeName = catchAsync(async (req, res, next) => {
-  const { search } = req.query;
-
-  const [employee, employeeErr] = await handleAsync(
-    EmployeeTable.getEmployeeByName({ name: search, opts: req.query })
-  );
-  if (employeeErr)
-    return next(new AppError("There was an error in fetching the data", 400));
-
-  res.status(200).json({ data: employee });
-  await saveCache({
-    key: req.accountId,
-    hash: req.originalUrl,
-    data: { data: employee },
-  });
-});
-
 exports.getEmployees = catchAsync(async (req, res, next) => {
   const [employees, employeesErr] = await handleAsync(
     EmployeeTable.getEmployees({ opts: req.query })
@@ -49,11 +32,13 @@ exports.getEmployees = catchAsync(async (req, res, next) => {
   if (employeesErr || countErr)
     return next(new AppError("There was an error in fetching the data", 400));
 
-  res.status(200).json({ data: employees, count });
+  res
+    .status(200)
+    .json({ data: employees.rows, count, currentCount: employees.count });
   await saveCache({
     key: req.accountId,
     hash: req.originalUrl,
-    data: { data: employees, count },
+    data: { data: employees.rows, count, currentCount: employees.count },
   });
 });
 

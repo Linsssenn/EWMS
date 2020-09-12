@@ -11,9 +11,9 @@ function addEmployee(info, address, result) {
   };
 }
 
-export const fetchEmployees = ({ page = 1, limit = 10 }) => {
+export const fetchEmployees = ({ page = 1, limit = 10, search = "" }) => {
   return fetchFromAccount({
-    endpoint: `/employee?page=${page}&limit=${limit}`,
+    endpoint: `/employee?search=${search}&page=${page}&limit=${limit}`,
     options: { credentials: "same-origin" },
     FETCH_TYPE: EMPLOYEE.FETCH,
     ERROR_TYPE: EMPLOYEE.FETCH_ERROR,

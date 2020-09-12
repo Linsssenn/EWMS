@@ -5,16 +5,18 @@ const DEFAULT_PROPERTIES = {
   limit: 10,
   fields: "*",
   sort: "1",
+  search: "",
 };
 
 class Pagination {
-  constructor({ table, page, limit, fields, sort }) {
+  constructor({ table, page, limit, fields, sort, search }) {
     this.table = table;
 
     this.page = page || DEFAULT_PROPERTIES.page;
     this.limit = limit || DEFAULT_PROPERTIES.limit;
     this.fields = fields || DEFAULT_PROPERTIES.fields;
     this.sort = sort || DEFAULT_PROPERTIES.sort;
+    this.search = search || DEFAULT_PROPERTIES.search;
   }
 
   paginate() {
@@ -28,12 +30,16 @@ class Pagination {
   // Prepared Statement does not work in ORDER BY
   execute() {
     return new Promise((resolve, reject) => {
-      const query = `SELECT ${this.fields} FROM ${this.table} ORDER BY ${this.sort} ASC LIMIT $1 OFFSET $2`;
+      const query = `SELECT ${this.fields} FROM ${this.table} WHERE name ILIKE $1 ORDER BY ${this.sort} ASC LIMIT $2 OFFSET $3`;
 
-      pool.query(query, [this.limit, this.skip], (error, response) => {
-        if (error) return reject(error);
-        resolve(response.rows);
-      });
+      pool.query(
+        query,
+        [`${this.search}%`, this.limit, this.skip],
+        (error, response) => {
+          if (error) return reject(error);
+          resolve(response.rows);
+        }
+      );
     });
   }
 

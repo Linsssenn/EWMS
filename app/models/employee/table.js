@@ -5,33 +5,17 @@ const handleAsync = require("../../utils/asyncHandler");
 
 class EmployeeTable {
   static getEmployees({ opts = {} }) {
-    const { page = 1, limit = 25 } = opts;
+    const { page = 1, limit = 25, search = "" } = opts;
     const skip = (page - 1) * limit;
-    console.log(skip);
+
     return new Promise((resolve, reject) => {
       pool.query(
-        'SELECT employee.id, info.name,  info.employmentType, info.email, info.homePhone, info.cellPhone, info.dateAdded, address.city, address.region, address.zipCode, address.lat, address.lon, address.geom  FROM employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" LIMIT $1 OFFSET $2',
-        [limit, skip],
+        'SELECT employee.id, info.name,  info.employmentType, info.email, info.homePhone, info.cellPhone, info.dateAdded, address.city, address.region, address.zipCode, address.lat, address.lon, address.geom  FROM employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" WHERE info.name ILIKE $1 LIMIT $2 OFFSET $3',
+        [`${search}%`, limit, skip],
         (error, response) => {
           if (error) return reject(error);
-          resolve(response.rows);
-        }
-      );
-    });
-  }
 
-  static getEmployeeByName({ opts = {}, name }) {
-    const { page = 1, limit = 25 } = opts;
-    const skip = (page - 1) * limit;
-    return new Promise((resolve, reject) => {
-      pool.query(
-        'SELECT employee.id, info.name,  info.employmentType, info.email, info.homePhone, info.cellPhone, info.dateAdded, address.city, address.region, address.zipCode, address.lat, address.lon, address.geom  FROM employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_address address ON address.id = employee."addressId" WHERE info.name LIKE $1 LIMIT $2 OFFSET $3',
-        [`${name}%`, limit, skip],
-        (error, response) => {
-          console.log(response.rows[0]);
-          if (error) return reject(error);
-
-          resolve(response.rows);
+          resolve({ rows: response.rows, count: response.rowCount });
         }
       );
     });

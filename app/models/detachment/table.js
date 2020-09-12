@@ -81,7 +81,7 @@ class DetachmentTable {
   }
 
   static async getDetachments(opts = {}) {
-    const { page, limit, fields, sort } = opts;
+    const { page, limit, fields, sort, search } = opts;
 
     const paginate = new Pagination({
       table: "detachment",
@@ -89,6 +89,7 @@ class DetachmentTable {
       page,
       fields,
       sort,
+      search,
     });
     const [data, dataErr] = await handleAsync(paginate.paginate().execute());
     const [{ count }, countErr] = await handleAsync(
