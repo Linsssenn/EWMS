@@ -3,6 +3,9 @@ import fetchStates from "./fetchStates";
 
 const DEFAULT_DETACHMENT = {
   detachments: [],
+  detachment: {},
+  employees: [],
+  detachmentId: {},
 };
 
 const detachment = (state = DEFAULT_DETACHMENT, action) => {
@@ -19,7 +22,7 @@ const detachment = (state = DEFAULT_DETACHMENT, action) => {
         detachments: action.data,
         count: action.count,
       };
-    case DETACHMENT.ADD:
+    case DETACHMENT.ADD: {
       const { result, detachment } = action;
       const addDetachment = { id: result.id, ...detachment };
       return {
@@ -28,6 +31,27 @@ const detachment = (state = DEFAULT_DETACHMENT, action) => {
         status: fetchStates.success,
         message: result.message,
       };
+    }
+    case DETACHMENT.GET: {
+      return {
+        ...state,
+        detachment: action.data,
+        message: action.message,
+
+        status: fetchStates.success,
+      };
+    }
+    case DETACHMENT.GET_EMPLOYEE: {
+      const { result, detachmentId } = action;
+      console.log(result);
+      return {
+        ...state,
+        detachmentId,
+        employees: result.data,
+        count: result.count,
+        status: fetchStates.success,
+      };
+    }
     default:
       return state;
   }

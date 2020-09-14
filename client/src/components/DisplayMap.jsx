@@ -42,6 +42,7 @@ const DisplayMap = (props, ref) => {
         custom={type === "employee" ? homeIcon : false}
         cluster={true}
       />
+      {props.children}
       {/* <Marker icon={homeIcon} position={DEFAULT_POSITION}>
         <Popup>
           A pretty CSS3 popup.

@@ -7,9 +7,10 @@ import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 
 const menuStyle = {
-  backgroundColor: "#fff",
-  border: "1px solid #ddd",
   boxShadow: "0px 3px 5px rgba(0, 0, 0, 0.2)",
+  fontWeight: "bold",
+  fontSize: "19px",
+  height: "5.5rem",
 };
 
 class Navbar extends Component {
@@ -21,7 +22,14 @@ class Navbar extends Component {
   render() {
     const { account } = this.props;
     return (
-      <Menu style={menuStyle} borderless fixed="top" size="large">
+      <Menu
+        style={menuStyle}
+        borderless
+        fixed="top"
+        size="small"
+        color="teal"
+        inverted
+      >
         <Container>
           <Menu.Item>
             <Image size="tiny" src={logo} />
@@ -44,7 +52,9 @@ class Navbar extends Component {
                 Detachment
               </Dropdown.Item>
 
-              <Dropdown.Item>Find nearest Employee</Dropdown.Item>
+              <Dropdown.Item as={NavLink} to="/detachment/nearest-employee">
+                Find nearest Employee
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
           <Menu.Menu position="right">

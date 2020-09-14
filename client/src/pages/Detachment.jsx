@@ -62,15 +62,16 @@ class Detachment extends Component {
   render() {
     const { status, count, detachments } = this.props.detachment;
     const { page, modal } = this.state;
+    console.log(detachments);
     if (status === fetchStates.fetching) {
       return (
-        <div style={{ marginTop: "8em" }}>
+        <div>
           <Spinner content={"detachments"} />
         </div>
       );
     }
     return (
-      <Container style={{ marginTop: "8em" }}>
+      <Container style={{ marginTop: "8em", width: "85%" }}>
         <Grid stackable columns={2} textAlign="left">
           <Grid.Column>
             <Segment>
@@ -81,6 +82,7 @@ class Detachment extends Component {
                 size="large"
                 name="search"
                 onChange={this.onChange}
+                color="teal"
               />
               <Divider hidden />
               <Button

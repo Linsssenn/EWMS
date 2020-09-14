@@ -16,7 +16,7 @@ class ReusedTable extends Component {
     return result;
   };
 
-  generateBody = (data, header, locate) =>
+  generateBody = (data, header) =>
     !!data &&
     data.map((value, index) => (
       <Table.Row key={index}>
@@ -48,12 +48,16 @@ class ReusedTable extends Component {
   };
 
   render() {
-    const { data, header } = this.props;
+    const { data, header, specifiedHeader } = this.props;
 
     return (
       <Table celled size="large">
         <Table.Header>
-          <Table.Row>{this.generateHeader(header)}</Table.Row>
+          <Table.Row>
+            {!!specifiedHeader
+              ? this.generateHeader(specifiedHeader)
+              : this.generateHeader(header)}
+          </Table.Row>
         </Table.Header>
 
         <Table.Body>{this.generateBody(data, header)}</Table.Body>

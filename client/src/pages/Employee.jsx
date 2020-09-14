@@ -72,14 +72,14 @@ class Employee extends Component {
 
     if (status === fetchStates.fetching) {
       return (
-        <div style={{ marginTop: "8em" }}>
+        <div>
           <Spinner content={"employee"} />
         </div>
       );
     }
 
     return (
-      <Container style={{ marginTop: "8em" }}>
+      <Container style={{ marginTop: "8em", width: "85%" }}>
         <Grid stackable columns={2} textAlign="left">
           <Grid.Column>
             <Segment>

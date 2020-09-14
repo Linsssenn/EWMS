@@ -1,5 +1,6 @@
 const Detachment = require("../models/detachment/index");
 const DetachmentTable = require("../models/detachment/table");
+const EmployeeTable = require("../models/employee/table");
 const catchAsync = require("../utils/catchAsync");
 const handleAsync = require("../utils/asyncHandler");
 const AppError = require("../utils/appError");
@@ -79,6 +80,7 @@ exports.getDetachment = catchAsync(async (req, res, next) => {
   const [detachment, detachmentErr] = await handleAsync(
     DetachmentTable.getDetachment(req.params.id)
   );
+  console.log(req.params.id);
   if (detachmentErr || !detachment)
     return next(new AppError("There was an error in getting the data", 400));
 
@@ -108,14 +110,16 @@ exports.findNearestEmployee = catchAsync(async (req, res, next) => {
   const [employees, employeesErr] = await handleAsync(
     DetachmentTable.findNearestEmployee({ opts: req.query, id: req.params.id })
   );
+
+  const { count } = await EmployeeTable.countEmployee();
   if (employeesErr || !employees)
     return next(new AppError("There was an error in getting the data", 400));
 
-  res.status(200).json({ data: employees });
+  res.status(200).json({ data: employees, count });
   await saveCache({
     key: req.accountId,
     hash: req.originalUrl,
-    data: { data: employees },
+    data: { data: employees, count },
   });
 });
 

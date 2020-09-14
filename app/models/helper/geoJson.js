@@ -4,8 +4,10 @@ class GeoJsonHelper {
     this.features = this.createFeatures(rows);
   }
 
+  // On2 bad implementation
   createFeatures(rows) {
     const features = [];
+    // Loop 1
     for (let index = 0; index < rows.length; index++) {
       let { lat, lon } = rows[index];
 
@@ -16,6 +18,7 @@ class GeoJsonHelper {
 
       const excludeFields = ["lon", "lat"];
       const items = { ...rows[index] };
+      // Loop 2
       excludeFields.forEach((element) => delete items[element]);
 
       const feature = {

@@ -28,10 +28,11 @@ function App() {
         <PrivateRoute exact path="/dashboard" component={Dashboard} />
         <PrivateRoute
           exact
-          path="/nearest-employee"
+          path="/detachment/nearest-employee"
           component={NearestEmployee}
         />
         <PrivateRoute exact path="/employee" component={Employee} />
+
         <PrivateRoute exact path="/detachment" component={Detachment} />
         <Route component={NotFound} />
       </Switch>

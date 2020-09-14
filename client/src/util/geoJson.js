@@ -14,7 +14,7 @@ class GeoJsonHelper {
         coordinates: [lon, lat],
       };
 
-      const excludeFields = ["lon", "lat"];
+      const excludeFields = ["lon", "lat", "geom"];
       const items = { ...rows[index] };
       excludeFields.forEach((element) => delete items[element]);
 
