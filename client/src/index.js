@@ -5,11 +5,15 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import { render } from "react-dom";
 
-// Leaflet
-import "leaflet/dist/leaflet.css";
 import "semantic-ui-css/semantic.min.css";
+
+// Leaflet and plugins
+import "leaflet/dist/leaflet.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder";
 import "react-leaflet-markercluster/dist/styles.min.css";
+import "leaflet-routing-machine";
+import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
+
 // Redux
 import { createStore } from "redux";
 import { Provider } from "react-redux";
@@ -19,7 +23,6 @@ import reducer from "./reducers";
 import { fetchAuthenticated } from "./actions/account";
 
 const store = createStore(reducer, middleware);
-
 store.dispatch(fetchAuthenticated()).then(() => {
   render(
     <Provider store={store}>

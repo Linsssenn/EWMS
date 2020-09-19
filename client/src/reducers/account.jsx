@@ -16,6 +16,7 @@ const account = (state = DEFAULT_ACCOUNT, action) => {
         ...state,
         status: fetchStates.success,
         message: action.message,
+        username: action.username,
         loggedIn: true,
       };
 

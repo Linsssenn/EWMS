@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Grid, Button, Form, Segment, Message } from "semantic-ui-react";
+import { Modal, Grid, Form, Segment, Message } from "semantic-ui-react";
 import Maps from "./Maps";
 import { storeDetachment } from "../actions/detachment";
 import { connect } from "react-redux";

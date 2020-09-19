@@ -69,6 +69,8 @@ class Employee extends Component {
   render() {
     const { status, employees, count } = this.props.employee;
     const { page, modal } = this.state;
+    const { location } = this.props;
+    const redirect = `${location.pathname}/nearest-detachment?id=`;
 
     if (status === fetchStates.fetching) {
       return (
@@ -90,7 +92,7 @@ class Employee extends Component {
                 placeholder="Enter name of Employee"
                 size="large"
                 name="search"
-                onChange={this.onChange}
+                onBlur={this.onChange}
               />
               <Divider hidden />
               <Button
@@ -115,6 +117,8 @@ class Employee extends Component {
               data={employees}
               header={["id", "name", "city"]}
               mapRef={this.mapRef}
+              redirect={redirect}
+              title="Detachment"
             />
             <Pagination
               onPageChange={this.onPageChange}
@@ -130,6 +134,7 @@ class Employee extends Component {
                 data={employees}
                 type={"employee"}
                 ref={this.mapRef}
+                cluster={true}
               />
             </Segment>
           </Grid.Column>

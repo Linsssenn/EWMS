@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Map, TileLayer } from "react-leaflet";
 import GeoJsonLayerMapCluster from "./GeoJsonLayerMapCluster";
 
 import L from "leaflet";
-import home from "../assets/home.png";
+import homeIcon from "./HomeIcon";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -14,23 +14,15 @@ L.Icon.Default.mergeOptions({
 
 const DisplayMap = (props, ref) => {
   const DEFAULT_POSITION = [14.216464, 120.97084];
-  const homeIcon = new L.Icon({
-    iconUrl: home,
-    iconRetinaUrl: home,
-    iconSize: [39, 40],
-    shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
-    shadowSize: [35, 40],
-    shadowAnchor: [7, 21],
-  });
 
-  const { data, type } = props;
+  const { data, type, cluster } = props;
 
   return (
     <Map
       center={DEFAULT_POSITION}
       zoom={13}
       ref={ref}
-      style={{ width: "100%", height: "500px", zIndex: 0 }}
+      style={{ width: "100%", height: "600px", zIndex: 0 }}
       className="markercluster-map"
     >
       <TileLayer
@@ -40,16 +32,9 @@ const DisplayMap = (props, ref) => {
       <GeoJsonLayerMapCluster
         data={data}
         custom={type === "employee" ? homeIcon : false}
-        cluster={true}
+        cluster={cluster ? true : false}
       />
       {props.children}
-      {/* <Marker icon={homeIcon} position={DEFAULT_POSITION}>
-        <Popup>
-          A pretty CSS3 popup.
-          <br />
-          Easily customizable.
-        </Popup>
-      </Marker> */}
     </Map>
   );
 };

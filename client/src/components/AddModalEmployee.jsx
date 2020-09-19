@@ -23,6 +23,7 @@ const infoFields = [
 
 const addressFields = ["lat", "lon", "city", "region", "zipCode"];
 const info = infoFields.reduce((a, b) => ((a[b] = ""), a), {});
+
 const address = addressFields.reduce((a, b) => ((a[b] = ""), a), {});
 
 const initialState = { info, address, buttonClicked: false };

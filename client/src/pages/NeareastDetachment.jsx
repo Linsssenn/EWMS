@@ -14,15 +14,16 @@ import {
 import { Marker, Popup } from "react-leaflet";
 import DisplayMap from "../components/DisplayMap";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchNearestEmployee, clearEmployees } from "../actions/detachment";
+import { fetchNearestDetachment, clearDetachments } from "../actions/employee";
 import getNumber from "../util/getNumber";
 import fetchStates from "../reducers/fetchStates";
 import Spinner from "../components/Spinner";
 import queryString from "query-string";
 import { useHistory, useLocation } from "react-router-dom";
 import Routing from "../components/Routing";
+import homeIcon from "../components/HomeIcon";
 
-export default function NearestEmployee() {
+export default function NeareastDetachment() {
   const DEFAULT_LIMIT = 10;
   const DEFAULT_FIELDS = { search: "" };
 
@@ -30,7 +31,7 @@ export default function NearestEmployee() {
   const [fields, setFields] = useState(DEFAULT_FIELDS);
   const [directions, setDirections] = useState([]);
 
-  const detachment = useSelector((state) => state.detachment);
+  const employee = useSelector((state) => state.employee);
 
   const dispatch = useDispatch();
   const mapRef = createRef();
@@ -40,17 +41,16 @@ export default function NearestEmployee() {
 
   const {
     status,
-    employees,
+    detachments,
     count,
-    detachment: selectedDetachment,
-    detachmentId,
-  } = detachment;
+    employee: selectedEmployee,
+    employeeId,
+  } = employee;
 
-  // check selected detachment
-  const detach =
-    parseInt(detachmentId) === selectedDetachment.id
-      ? { name: selectedDetachment.name, address: selectedDetachment.address }
-      : "";
+  // check selected employee
+
+  const emp =
+    parseInt(employeeId) === selectedEmployee.id ? selectedEmployee.name : "";
 
   // Similar to componentDidMount and componentDidUpdate:
   // “only run on mount, and clean up on unmount”
@@ -58,16 +58,13 @@ export default function NearestEmployee() {
   useEffect(() => {
     const parsed = queryString.parse(location.search);
     const { id } = parsed;
+
     if (id) {
-      dispatch(
-        fetchNearestEmployee({
-          detachmentId: id,
-        })
-      );
+      dispatch(fetchNearestDetachment({ employeeId: id }));
     }
     setDirections([]);
     // componentWillUnmount
-    return () => dispatch(clearEmployees());
+    return () => dispatch(clearDetachments());
     // componentDidUpdate fires when there's change in dispatch and location
   }, [dispatch, location]);
 
@@ -75,11 +72,11 @@ export default function NearestEmployee() {
   useEffect(() => {
     const map = mapRef.current;
 
-    if (map != null && !!selectedDetachment) {
-      const { lat, lon } = selectedDetachment;
+    if (map != null && !!selectedEmployee) {
+      const { lat, lon } = selectedEmployee;
       map.leafletElement.setView([lat, lon], 13);
     }
-  }, [selectedDetachment]);
+  }, [selectedEmployee]);
 
   // Table page change event
   const onPageChange = (event, data) => {
@@ -89,10 +86,10 @@ export default function NearestEmployee() {
     setDirections([]);
     if (id) {
       dispatch(
-        fetchNearestEmployee({
+        fetchNearestDetachment({
           page: data.activePage,
           limit: DEFAULT_LIMIT,
-          detachmentId: id,
+          employeeId: id,
         })
       );
     }
@@ -112,14 +109,14 @@ export default function NearestEmployee() {
 
   // activate set waypoints in Routing component
   const routeDirections = (latLngObj) => {
-    const { lat, lon } = selectedDetachment;
+    const { lat, lon } = selectedEmployee;
     setDirections([{ lat, lon }, latLngObj]);
   };
 
   if (status === fetchStates.fetching) {
     return (
       <div>
-        <Spinner content={"Nearest Employees"} />
+        <Spinner content={"Nearest Detachments"} />
       </div>
     );
   }
@@ -131,39 +128,35 @@ export default function NearestEmployee() {
           <Grid.Column>
             {" "}
             <Segment>
-              <Header as="h3">Find Nearest Employees</Header>
+              <Header as="h3">Find Nearest Detachments</Header>
               <p>
-                Search for the nearest employees from a detachment's location
+                Search for the nearest detachment from an employee's location
               </p>
               <Input
                 style={{ width: "100%" }}
                 name="search"
-                placeholder="Enter ID of Detachment"
+                placeholder="Enter ID of Employee"
                 size="large"
                 onBlur={onChange}
               />
               <Divider hidden />
               <Button onClick={onSearch} icon labelPosition="left" color="teal">
-                <Icon name="search" /> SEARCH DETACHMENT
+                <Icon name="search" /> SEARCH EMPLOYEE
               </Button>
             </Segment>
-            {!!detach && (
-              <Header as="h4">
-                Employees near of {detach.name} in {detach.address}
-              </Header>
-            )}
+            {!!emp && <Header as="h4">Detachments near of {emp}</Header>}
           </Grid.Column>
         </Grid.Row>
 
-        {!!Object.keys(selectedDetachment).length && (
+        {!!Object.keys(selectedEmployee).length && (
           <React.Fragment>
             {" "}
             <Grid.Column>
               <ReusedTable
-                data={employees}
-                header={["id", "name", "city", "dist_miles"]}
+                data={detachments}
+                header={["id", "name", "address", "dist_miles"]}
                 mapRef={mapRef}
-                specifiedHeader={["id", "name", "city", "distance in miles"]}
+                specifiedHeader={["id", "name", "address", "distance in miles"]}
                 route={routeDirections}
               />
               <Pagination
@@ -176,13 +169,14 @@ export default function NearestEmployee() {
             </Grid.Column>
             <Grid.Column>
               <Segment>
-                <DisplayMap data={employees} type={"employee"} ref={mapRef}>
+                <DisplayMap data={detachments} ref={mapRef}>
                   <Marker
-                    position={[selectedDetachment.lat, selectedDetachment.lon]}
+                    icon={homeIcon}
+                    position={[selectedEmployee.lat, selectedEmployee.lon]}
                   >
                     <Popup>
-                      <h3>Detachment</h3>
-                      {Object.entries(selectedDetachment).map(
+                      <h3>Employee</h3>
+                      {Object.entries(selectedEmployee).map(
                         ([key, value], index) => (
                           <div key={index}>
                             <span>{key}: </span>

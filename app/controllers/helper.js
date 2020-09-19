@@ -41,7 +41,7 @@ const setSession = async ({ username, res, sessionId }) => {
 // Writes the cookie
 const setSessionCookie = ({ sessionString, res }) => {
   res.cookie("sessionString", sessionString, {
-    expire: Date.now() + 360000, //expires after 1 hour
+    expires: new Date(Date.now() + 8 * 3600000), // cookie will be removed after 8 hours
     httpOnly: true, // use http
     // secure: true // use with https
   });

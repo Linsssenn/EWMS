@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { GeoJSON, FeatureGroup, Popup, Tooltip, Marker } from "react-leaflet";
+import { FeatureGroup, Popup, Tooltip, Marker } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 
 import L from "leaflet";

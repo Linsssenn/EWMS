@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import { Table, Button, Icon } from "semantic-ui-react";
 
 class ReusedTable extends Component {
@@ -16,7 +17,7 @@ class ReusedTable extends Component {
     return result;
   };
 
-  generateBody = (data, header) =>
+  generateBody = (data, header, route, redirect, title) =>
     !!data &&
     data.map((value, index) => (
       <Table.Row key={index}>
@@ -26,30 +27,65 @@ class ReusedTable extends Component {
           ))}
 
         <Table.Cell>
-          <Button
-            icon
-            labelPosition="left"
-            color="teal"
-            onClick={() => this.flyTo(value.lat, value.lon)}
-          >
-            <Icon name="location arrow" /> LOCATE
-          </Button>
+          <Button.Group vertical>
+            <Button
+              icon
+              labelPosition="left"
+              color="teal"
+              onClick={() => this.flyTo(value.lat, value.lon)}
+            >
+              <Icon name="map marker alternate" /> LOCATE
+            </Button>
+
+            {!!route && (
+              <Button
+                icon
+                labelPosition="left"
+                color="teal"
+                onClick={() => route({ lat: value.lat, lon: value.lon })}
+              >
+                <Icon name="location arrow" /> DIRECTIONS
+              </Button>
+            )}
+          </Button.Group>
         </Table.Cell>
+
+        {!!redirect && (
+          <Table.Cell>
+            {" "}
+            <Button
+              as={Link}
+              icon
+              labelPosition="left"
+              color="teal"
+              to={`${redirect}${value.id}`}
+            >
+              <Icon name="crosshairs" /> Nearest {title}
+            </Button>
+          </Table.Cell>
+        )}
       </Table.Row>
     ));
 
   flyTo = (lat, lang) => {
     // Forwaded refs
     const map = this.props.mapRef.current;
-
-    if (map && lat && lang != null) {
-      map.leafletElement.flyTo([lat, lang], 16);
+    console.log(map && lat && lang != null);
+    if (map != null) {
+      map.leafletElement.setView([lat, lang], 16);
     }
   };
 
   render() {
-    const { data, header, specifiedHeader } = this.props;
-
+    const {
+      data,
+      header,
+      specifiedHeader,
+      route,
+      redirect,
+      title,
+    } = this.props;
+    console.log(data);
     return (
       <Table celled size="large">
         <Table.Header>
@@ -60,7 +96,9 @@ class ReusedTable extends Component {
           </Table.Row>
         </Table.Header>
 
-        <Table.Body>{this.generateBody(data, header)}</Table.Body>
+        <Table.Body>
+          {this.generateBody(data, header, route, redirect, title)}
+        </Table.Body>
       </Table>
     );
   }

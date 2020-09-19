@@ -37,6 +37,7 @@ class Login extends Component {
   // }
 
   // re-renders due to changes to props or state
+  //  fires when the parent causes a re-render and not as a result of a local setState
   static getDerivedStateFromProps(props, state) {
     if (props.account.loggedIn) {
       props.history.push("/dashboard");

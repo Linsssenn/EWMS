@@ -6,6 +6,7 @@ const DEFAULT_DETACHMENT = {
   detachment: {},
   employees: [],
   detachmentId: {},
+  route: [],
 };
 
 const detachment = (state = DEFAULT_DETACHMENT, action) => {
@@ -43,7 +44,7 @@ const detachment = (state = DEFAULT_DETACHMENT, action) => {
     }
     case DETACHMENT.GET_EMPLOYEE: {
       const { result, detachmentId } = action;
-      console.log(result);
+
       return {
         ...state,
         detachmentId,
@@ -52,6 +53,15 @@ const detachment = (state = DEFAULT_DETACHMENT, action) => {
         status: fetchStates.success,
       };
     }
+    case DETACHMENT.CLEAR_EMPLOYEE: {
+      return {
+        ...state,
+        employees: [],
+        detachmentId: {},
+        detachment: {},
+      };
+    }
+
     default:
       return state;
   }

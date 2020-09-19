@@ -1,5 +1,6 @@
 import thunk from "redux-thunk";
 import { applyMiddleware } from "redux";
 import logger from "./logger";
+import auth from "./auth";
 
-export default applyMiddleware(logger, thunk);
+export default applyMiddleware(logger, auth, thunk);

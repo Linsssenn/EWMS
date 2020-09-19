@@ -35,6 +35,7 @@ class Detachment extends Component {
 
   componentDidMount() {
     this.props.fetchDetachments({});
+    console.log(this.props.location.pathname);
   }
 
   onPageChange = (event, data) => {
@@ -57,12 +58,20 @@ class Detachment extends Component {
     this.props.fetchDetachments({ search: search });
   };
 
+  // onRedirect = (id) => {
+  //   const { location, history } = this.props;
+  //   history.push(`${location.pathname}/nearest-employee?id=${id}`);
+  // };
+
   toggleModal = () => this.setState({ modal: !this.state.modal });
 
   render() {
     const { status, count, detachments } = this.props.detachment;
     const { page, modal } = this.state;
-    console.log(detachments);
+
+    const { location } = this.props;
+    const redirect = `${location.pathname}/nearest-employee?id=`;
+
     if (status === fetchStates.fetching) {
       return (
         <div>
@@ -81,7 +90,7 @@ class Detachment extends Component {
                 placeholder="Enter name of Detachment"
                 size="large"
                 name="search"
-                onChange={this.onChange}
+                onBlur={this.onChange}
                 color="teal"
               />
               <Divider hidden />
@@ -107,6 +116,8 @@ class Detachment extends Component {
               data={detachments}
               header={["id", "name", "city"]}
               mapRef={this.mapRef}
+              redirect={redirect}
+              title="Employee"
             />
             <Pagination
               onPageChange={this.onPageChange}
@@ -118,7 +129,7 @@ class Detachment extends Component {
           </Grid.Column>
           <Grid.Column>
             <Segment>
-              <DisplayMap data={detachments} ref={this.mapRef} />
+              <DisplayMap data={detachments} ref={this.mapRef} cluster={true} />
             </Segment>
           </Grid.Column>
         </Grid>

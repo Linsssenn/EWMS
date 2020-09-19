@@ -28,6 +28,10 @@ export const fetchDetachments = ({ page = 1, limit = 10, search = "" }) => {
   });
 };
 
+export function clearEmployees() {
+  return { type: DETACHMENT.CLEAR_EMPLOYEE };
+}
+
 export const fetchDetachment = ({ id }) =>
   fetchFromAccount({
     endpoint: `/detachment/${id}`,

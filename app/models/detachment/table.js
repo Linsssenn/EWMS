@@ -51,6 +51,15 @@ class DetachmentTable {
     });
   }
 
+  static countDetachment() {
+    return new Promise((resolve, reject) => {
+      pool.query("SELECT COUNT(*) from detachment", (error, response) => {
+        if (error) return reject(error);
+        resolve(response.rows[0]);
+      });
+    });
+  }
+
   static getDetachmentsGeo(opts = {}) {
     const { page = 1, limit = 25 } = opts;
     const skip = (page - 1) * limit;
@@ -135,7 +144,7 @@ class DetachmentTable {
         SELECT * FROM employee_address WHERE ST_XMin(ST_SetSRID(ST_MakePoint(lon,lat),4326)) > -126 AND ST_XMax(ST_SetSRID(ST_MakePoint(lon,lat),4326)) < 130
         AND ST_YMin(ST_SetSRID(ST_MakePoint(lon,lat),4326)) > -10 AND ST_YMax(ST_SetSRID(ST_MakePoint(lon,lat),4326)) < 70
         ),
-        employee_validate_detachment AS (
+        validate_detachment AS (
         SELECT
         *
         FROM 
@@ -145,10 +154,13 @@ class DetachmentTable {
         AND ST_YMin(ST_SetSRID(ST_MakePoint(lon,lat),4326)) > -10
         AND ST_YMax(ST_SetSRID(ST_MakePoint(lon,lat),4326)) < 77
         )
-        SELECT employee.id, info.name, address.city, address.lat, address.lon, ST_Distance(ST_Transform(ST_SetSRID(ST_MakePoint(address.lon,address.lat),4326),3857), ST_Transform(ST_SetSRID(ST_MakePoint(detachment.lon
-       ,detachment.lat),4326),3857)) *  0.000621371192  as dist_miles FROM employee_validate_detachment as detachment, employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_validate_address address ON address.id = employee."addressId" WHERE detachment.id = $1 ORDER BY dist_miles ASC LIMIT $2 OFFSET $3`,
+        SELECT employee.id, info.name, info.employmentType, info.email, info.homePhone, info.cellPhone, address.city, address.region, address.zipCode, address.lat, address.lon,round(cast(ST_Distance(ST_Transform(ST_SetSRID(ST_MakePoint(address.lon,address.lat),4326),3857), 
+        ST_Transform(ST_SetSRID(ST_MakePoint(detachment.lon
+       ,detachment.lat),4326),3857)) *  0.000621371192 as numeric),2)  as dist_miles 
+       FROM validate_detachment as detachment, employee INNER JOIN employee_genInfo info ON info.id = employee."infoId" INNER JOIN employee_validate_address address ON address.id = employee."addressId" WHERE detachment.id = $1 ORDER BY dist_miles ASC LIMIT $2 OFFSET $3`,
         [id, limit, skip],
         (error, response) => {
+          console.log(error);
           if (error) return reject(error);
           resolve(response.rows);
         }

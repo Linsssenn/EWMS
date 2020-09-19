@@ -11,6 +11,18 @@ function addEmployee(info, address, result) {
   };
 }
 
+function getDetachment(employeeId, result) {
+  return {
+    type: EMPLOYEE.GET_DETACHMENT,
+    employeeId,
+    result,
+  };
+}
+
+export function clearDetachments() {
+  return { type: EMPLOYEE.CLEAR_DETACHMENT };
+}
+
 export const fetchEmployees = ({ page = 1, limit = 10, search = "" }) => {
   return fetchFromAccount({
     endpoint: `/employee?search=${search}&page=${page}&limit=${limit}`,
@@ -38,6 +50,27 @@ export const fetchEmployeeByName = ({ name, page = 1, limit = 10 }) =>
     ERROR_TYPE: EMPLOYEE.FETCH_ERROR,
     SUCCES_TYPE: EMPLOYEE.GET,
   });
+
+export const fetchNearestDetachment = ({
+  page = 1,
+  limit = 10,
+  employeeId,
+}) => {
+  return (dispatch) => {
+    dispatch({ type: EMPLOYEE.FETCH });
+    dispatch(fetchEmployee({ id: employeeId }));
+    return fetchApi({
+      endpoint: `/employee/nearest-detachment/${employeeId}?page=${page}&limit=${limit}`,
+      options: {
+        credentials: "same-origin",
+      },
+    })
+      .then((result) => dispatch(getDetachment(employeeId, result)))
+      .catch((error) =>
+        dispatch({ type: EMPLOYEE.FETCH_ERROR, message: error.message })
+      );
+  };
+};
 
 export const storeEmployee = ({ info, address }) => {
   return (dispatch) => {

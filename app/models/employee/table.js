@@ -152,7 +152,21 @@ class EmployeeTable {
     const skip = (page - 1) * limit;
     return new Promise((resolve, reject) => {
       pool.query(
-        "SELECT detachment.id, detachment.address AS detachment_address, detachment.name as detachment_name, detachment.lon, detachment.lat, ST_Distance(ST_Transform(ST_SetSRID(ST_MakePoint(employee_address.lon,employee_address.lat),4326),3857), ST_Transform(ST_SetSRID(ST_MakePoint(detachment.lon,detachment.lat),4326),3857)) *  0.000621371192  as dist_miles FROM employee_address, detachment WHERE employee_address.id = $1 ORDER BY dist_miles ASC LIMIT $2 OFFSET $3",
+        `WITH employee_validate_address AS (
+          SELECT * FROM employee_address WHERE ST_XMin(ST_SetSRID(ST_MakePoint(lon,lat),4326)) > -126 AND ST_XMax(ST_SetSRID(ST_MakePoint(lon,lat),4326)) < 130
+          AND ST_YMin(ST_SetSRID(ST_MakePoint(lon,lat),4326)) > -10 AND ST_YMax(ST_SetSRID(ST_MakePoint(lon,lat),4326)) < 70
+          ),
+          employee_validate_detachment AS (
+          SELECT
+          *
+          FROM 
+          detachment
+          WHERE ST_XMin(ST_SetSRID(ST_MakePoint(lon,lat),4326)) > -126
+          AND ST_XMax(ST_SetSRID(ST_MakePoint(lon,lat),4326)) < 130
+          AND ST_YMin(ST_SetSRID(ST_MakePoint(lon,lat),4326)) > -10
+          AND ST_YMax(ST_SetSRID(ST_MakePoint(lon,lat),4326)) < 77
+          )
+      SELECT detachment.id, detachment.name as name, detachment.address AS address, detachment.lon, detachment.lat, round(cast(ST_Distance(ST_Transform(ST_SetSRID(ST_MakePoint(employee_address.lon,employee_address.lat),4326),3857), ST_Transform(ST_SetSRID(ST_MakePoint(detachment.lon,detachment.lat),4326),3857)) *  0.000621371192 as numeric),2)  as dist_miles FROM employee  INNER JOIN employee_validate_address as employee_address ON employee_address.id = employee."addressId", employee_validate_detachment as detachment WHERE employee.id = $1 ORDER BY dist_miles ASC LIMIT $2 OFFSET $3`,
         [id, limit, skip],
         (error, response) => {
           if (error) return reject(error);

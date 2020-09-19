@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Menu, Container, Dropdown, Image } from "semantic-ui-react";
 import logo from "../logo.svg";
 import { connect } from "react-redux";
-import { logout } from "../actions/account";
+import { logout, fetchAuthenticated } from "../actions/account";
 import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 
@@ -14,8 +14,11 @@ const menuStyle = {
 };
 
 class Navbar extends Component {
-  onLogout = (event) => {
-    event.preventDefault();
+  componentDidMount() {
+    this.props.fetchAuthenticated();
+  }
+
+  onLogout = () => {
     this.props.logout();
   };
 
@@ -43,7 +46,9 @@ class Navbar extends Component {
                 Employee
               </Dropdown.Item>
 
-              <Dropdown.Item>Find nearest Detachment</Dropdown.Item>
+              <Dropdown.Item as={NavLink} to="/employee/nearest-detachment">
+                Find nearest Detachment
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
           <Dropdown item simple text="Detachment">
@@ -83,4 +88,4 @@ const mapStateToProps = (state) => ({
   account: state.account,
 });
 
-export default connect(mapStateToProps, { logout })(Navbar);
+export default connect(mapStateToProps, { logout, fetchAuthenticated })(Navbar);

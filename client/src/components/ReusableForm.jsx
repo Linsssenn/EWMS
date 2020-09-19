@@ -2,7 +2,7 @@ import React from "react";
 import { Form, Button, Icon } from "semantic-ui-react";
 
 const ReusableForm = (props) => {
-  const { cancel, errors, submit, children } = props;
+  const { cancel, submit, children } = props;
 
   const handleSubmit = (event) => {
     event.preventDefault();
