@@ -25,14 +25,14 @@ class Login extends Component {
 
   componentDidMount() {
     if (this.props.account.loggedIn) {
-      this.props.history.push("/dashboard");
+      this.props.history.push("/home");
     }
   }
 
   // unsafe according to Docs
   // componentWillReceiveProps(nextProps) {
   //   if (nextProps.account.loggedIn) {
-  //     nextProps.history.push("/dashboard");
+  //     nextProps.history.push("/home");
   //   }
   // }
 
@@ -40,7 +40,7 @@ class Login extends Component {
   //  fires when the parent causes a re-render and not as a result of a local setState
   static getDerivedStateFromProps(props, state) {
     if (props.account.loggedIn) {
-      props.history.push("/dashboard");
+      props.history.push("/home");
     }
     return null;
   }

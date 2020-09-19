@@ -8,6 +8,7 @@ import { render } from "react-dom";
 import "semantic-ui-css/semantic.min.css";
 
 // Leaflet and plugins
+import "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-control-geocoder/dist/Control.Geocoder";
 import "react-leaflet-markercluster/dist/styles.min.css";

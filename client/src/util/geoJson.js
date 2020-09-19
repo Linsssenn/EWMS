@@ -31,4 +31,4 @@ class GeoJsonHelper {
   }
 }
 
-module.exports = GeoJsonHelper;
+export default GeoJsonHelper;

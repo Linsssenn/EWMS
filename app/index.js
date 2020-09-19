@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const path = require("path");
 
 const AppError = require("./utils/appError");
 
@@ -48,10 +49,14 @@ app.use("/api/v1/detachment", detachmentRouter);
 app.use("/api/v1/employee", employeeRouter);
 
 // Load Frontend
-// app.use(express.static("client/build"));
-// app.get("*", (req, res) => {
-//   res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-// });
+if (process.env.NODE_ENV === "development") {
+  app.use(express.static("client/build"));
+  app.get("*", (req, res) => {
+    res.sendFile(
+      path.resolve(__dirname, "..", "client", "build", "index.html")
+    );
+  });
+}
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));

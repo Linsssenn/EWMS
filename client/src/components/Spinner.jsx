@@ -6,7 +6,7 @@ const Spinner = ({ content }) => (
     <Loader
       inline="centered"
       size="massive"
-      content={`Preparing ${content}...`}
+      content={`Loading ${content}...`}
     />
   </Dimmer>
 );
