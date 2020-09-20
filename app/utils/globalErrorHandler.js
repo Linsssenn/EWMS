@@ -12,12 +12,12 @@ const sendErrorDev = (err, req, res) => {
     });
   }
 
-  return res.status(err.statusCode).json({
-    title: "Something went wrong!",
-    message: err.message,
-    ...err,
-    stack: err.stack,
-  });
+  // return res.status(err.statusCode).json({
+  //   title: "Something went wrong!",
+  //   message: err.message,
+  //   ...err,
+  //   stack: err.stack,
+  // });
 };
 
 const sendErrorProd = (err, req, res) => {
