@@ -5,3 +5,6 @@ heroku addons:create heroku-redis:hobby-dev -a protected-mountain-27636
 
 //needs to add credit card for redis
 heroku run bash -a APPNAME
+
+//Redis
+https://redislabs.com/get-started-with-redis/

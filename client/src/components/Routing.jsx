@@ -13,6 +13,7 @@ class Routing extends MapLayer {
       createMarker: function () {
         return null;
       },
+
       lineOptions: {
         addWaypoints: false,
         styles: [{ color: "#0984e3", weight: 7 }],
@@ -26,28 +27,30 @@ class Routing extends MapLayer {
     return leafletElement.getPlan();
   }
 
-  // componentDidMount() {
-  //   console.log(this.leafletElement);
-  //   this.leafletElement.setWaypoints([
-  //     L.latLng(14.291301, 120.977593),
-  //     L.latLng(14.230774065876195, 120.9529495239258),
-  //   ]);
-  // }
+  componentDidMount() {
+    // console.log(this.leafletElement);
+    // this.leafletElement.setWaypoints([
+    //   L.latLng(14.291301, 120.977593),
+    //   L.latLng(14.230774065876195, 120.9529495239258),
+    // ]);
+    this.leafletElement.hide();
+  }
 
   componentDidUpdate(prevProps) {
-    
-    if(JSON.stringify(this.props.directions) !== JSON.stringify(prevProps.directions)){
-      console.log(prevProps, this.props)
+    if (
+      JSON.stringify(this.props.directions) !==
+      JSON.stringify(prevProps.directions)
+    ) {
+      console.log(prevProps, this.props);
       this.setWayPoint();
     }
-    
   }
 
   // fires when receive props
   setWayPoint = () => {
     const { directions } = this.props;
-    
-    if (directions.length !== 0){
+
+    if (directions.length !== 0) {
       this.leafletElement.setWaypoints([
         L.latLng(directions[0].lat, directions[0].lon),
         L.latLng(directions[1].lat, directions[1].lon),
