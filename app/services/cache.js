@@ -1,6 +1,16 @@
 const redis = require("redis");
 const util = require("util");
-const client = redis.createClient();
+
+let client;
+if (process.env.NODE_ENV === "production") {
+  client = redis.createClient({
+    url: process.env.REDIS_URL,
+    password: process.env.REDIS_AUTH_PASS,
+  });
+} else {
+  client = redis.createClient();
+}
+
 client.hget = util.promisify(client.hget);
 
 client.on("error", function (err) {
