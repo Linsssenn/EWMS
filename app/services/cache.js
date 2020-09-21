@@ -4,7 +4,7 @@ const util = require("util");
 let client;
 if (process.env.NODE_ENV === "production") {
   client = redis.createClient({
-    url: process.env.REDIS_URL,
+    host: process.env.REDIS_URL,
     password: process.env.REDIS_PASSWORD,
     port: process.env.REDIS_PORT,
   });
