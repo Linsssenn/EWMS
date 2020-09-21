@@ -13,7 +13,6 @@ class Routing extends MapLayer {
       createMarker: function () {
         return null;
       },
-
       lineOptions: {
         addWaypoints: false,
         styles: [{ color: "#0984e3", weight: 7 }],
@@ -22,19 +21,19 @@ class Routing extends MapLayer {
         profile: "mapbox/driving",
         language: "en",
       }),
+      show: false,
     }).addTo(map.current.leafletElement);
 
     return leafletElement.getPlan();
   }
 
-  componentDidMount() {
-    // console.log(this.leafletElement);
-    // this.leafletElement.setWaypoints([
-    //   L.latLng(14.291301, 120.977593),
-    //   L.latLng(14.230774065876195, 120.9529495239258),
-    // ]);
-    this.leafletElement.hide();
-  }
+  // componentDidMount() {
+  //   console.log(this.leafletElement);
+  //   this.leafletElement.setWaypoints([
+  //     L.latLng(14.291301, 120.977593),
+  //     L.latLng(14.230774065876195, 120.9529495239258),
+  //   ]);
+  // }
 
   componentDidUpdate(prevProps) {
     if (
