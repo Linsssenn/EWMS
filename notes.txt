@@ -1,3 +1,6 @@
 heroku addons:create heroku-postgresql:hobby-dev
 heroku pg:psql
-heroku pg:push ewmsdb DATABASE_URL --app protected-mountain-27636
+heroku pg:phttps://devcenter.heroku.com/categories/billing
+heroku addons:create heroku-redis:hobby-dev -a protected-mountain-27636
+
+//needs to add credit card for redis
