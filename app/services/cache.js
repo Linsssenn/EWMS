@@ -5,7 +5,7 @@ let client;
 if (process.env.NODE_ENV === "production") {
   client = redis.createClient({
     url: process.env.REDIS_URL,
-    password: process.env.REDIS_AUTH_PASS,
+    password: process.env.REDIS_PASSWORD,
   });
 } else {
   client = redis.createClient();
