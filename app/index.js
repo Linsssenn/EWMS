@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 // Security
 const rateLimit = require("express-rate-limit");
-const helmet = require("helmet");
+
 const compression = require("compression");
 
 const AppError = require("./utils/appError");
@@ -26,7 +26,6 @@ app.options("*", cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(helmet());
 
 /**
  * Protetion agains DDOS and Brute force attack
