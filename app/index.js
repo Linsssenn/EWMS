@@ -50,7 +50,7 @@ app.use("/api/v1/detachment", detachmentRouter);
 app.use("/api/v1/employee", employeeRouter);
 
 // Load Frontend
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "..", "client", "build")));
   app.get("*", (req, res) => {
     res.sendFile(
